@@ -30,6 +30,36 @@ end
 
 -- }}}
 
+-- {{{ Wibox
+
+-- {{{ And the wibox itself
+
+-- Create a wibox for each screen and add it
+witop = {}
+wibottom = {}
+
+for s = 1, screen.count() do
+
+  -- Create wiboxes
+  witop[s]    = awful.wibox({ position = "top",    screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
+  wibottom[s] = awful.wibox({ position = "bottom", screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
+
+  -- Add widgets to wiboxes - order matters
+  witop[s].widgets =
+  {
+    layout = awful.widget.layout.horizontal.leftright,
+  }
+
+  wibottom[s].widgets =
+  {
+    layout = awful.widget.layout.horizontal.leftright,
+  }
+end
+
+-- }}}
+
+-- }}}
+
 -- {{{ Key bindings
 
 globalkeys = awful.util.table.join(
