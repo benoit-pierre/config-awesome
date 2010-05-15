@@ -100,7 +100,13 @@ systray = widget({ type = "systray" })
 witop = {}
 wibottom = {}
 
+-- Prompt box
+promptbox = {}
+
 for s = 1, screen.count() do
+
+  -- Create a promptbox for each screen
+  promptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
 
   -- Create wiboxes
   witop[s]    = awful.wibox({ position = "top",    screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
@@ -116,6 +122,7 @@ for s = 1, screen.count() do
   {
     layout = awful.widget.layout.horizontal.leftright,
     clockbox,
+    promptbox[s],
     {
       layout = awful.widget.layout.horizontal.rightleft,
       systray,
@@ -143,6 +150,12 @@ awful.key(k_m, 'k', function () awful.client.focus.byidx(-1) if client.focus the
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
 awful.key(k_mc, 'r', awesome.restart),
 awful.key(k_ms, 'q', awesome.quit),
+
+-- }}}
+
+-- {{{ Prompts
+
+awful.key({ modkey }, "r", function () promptbox[mouse.screen]:run() end),
 
 -- }}}
 
