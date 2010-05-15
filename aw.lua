@@ -298,9 +298,37 @@ awful.rules.rules =
       buttons = clientbuttons,
     }
   },
+  {
+    rule = { class = 'MPlayer' },
+    properties =
+    {
+      floating = true,
+      focus = false,
+      ontop = true,
+      sticky = true
+    },
+    callback = function (c)
+      awful.client.property.set(c, 'nofocus', true)
+    end,
+  },
 }
 
 -- }}}
+
+-- {{{ Improved focus filter.
+
+orig_focus_filter = awful.client.focus.filter
+
+function focus_filter(c)
+  if awful.client.property.get(c, 'nofocus') then
+    return nil
+  end
+  return orig_focus_filter(c)
+end
+
+awful.client.focus.filter = focus_filter
+
+--- }}}
 
 -- {{{ Signals
 
