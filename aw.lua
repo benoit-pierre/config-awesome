@@ -142,9 +142,11 @@ awful.key(k_m, 'k', function () awful.client.focus.byidx(-1) if client.focus the
 
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
 awful.key(k_mc, 'r', awesome.restart),
-awful.key(k_ms, 'q', awesome.quit)
+awful.key(k_ms, 'q', awesome.quit),
 
 -- }}}
+
+nil
 
 )
 
