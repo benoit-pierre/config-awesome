@@ -63,7 +63,7 @@ end
 tags = {}
 for s = 1, screen.count() do
   -- Each screen has its own tag table.
-  tags[s] = awful.tag({ 1 }, s, awful.layout.suit.max)
+  tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8 }, s, awful.layout.suit.max)
 end
 
 -- }}}
@@ -221,6 +221,54 @@ awful.key({ modkey }, "r", function () promptbox[mouse.screen]:run() end),
 nil
 
 )
+
+-- {{{ Assign keys for each tag
+
+-- Bind keyboard digits
+-- Compute the maximum number of digit we need, limited to 12
+keynumber = 0
+for s = 1, screen.count() do
+  keynumber = math.min(12, math.max(#tags[s], keynumber));
+end
+
+for i = 1, keynumber do
+  if i == 11 then
+    k = "minus"
+  elseif i == 12 then
+    k = "equal"
+  else
+    k = i % 10 -- 10 become 0
+  end
+  globalkeys = awful.util.table.join(globalkeys,
+    awful.key(k_m, k,
+      function ()
+        local screen = mouse.screen
+        if tags[screen][i] then
+          awful.tag.viewonly(tags[screen][i])
+        end
+      end),
+    awful.key(k_mc, k,
+      function ()
+        local screen = mouse.screen
+        if tags[screen][i] then
+          awful.tag.viewtoggle(tags[screen][i])
+        end
+      end),
+    awful.key(k_ms, k,
+      function ()
+        if client.focus and tags[client.focus.screen][i] then
+          awful.client.movetotag(tags[client.focus.screen][i])
+        end
+      end),
+    awful.key(k_mcs, k,
+      function ()
+        if client.focus and tags[client.focus.screen][i] then
+          awful.client.toggletag(tags[client.focus.screen][i])
+        end
+      end))
+end
+
+-- }}}
 
 -- Set keys
 root.keys(globalkeys)
