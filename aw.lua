@@ -170,6 +170,7 @@ root.keys(globalkeys)
 -- }}}
 
 -- {{{ Rules
+
 awful.rules.rules = {
     -- All clients will match this rule.
     { rule = { },
@@ -178,6 +179,7 @@ awful.rules.rules = {
                      focus = true,
                      size_hints_honor = false } },
 }
+
 -- }}}
 
 -- {{{ Signals
