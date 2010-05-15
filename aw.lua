@@ -88,6 +88,12 @@ clock_timer:start()
 
 -- }}}
 
+-- Systray {{{
+
+systray = widget({ type = "systray" })
+
+-- }}}
+
 -- {{{ And the wibox itself
 
 -- Create a wibox for each screen and add it
@@ -110,6 +116,10 @@ for s = 1, screen.count() do
   {
     layout = awful.widget.layout.horizontal.leftright,
     clockbox,
+    {
+      layout = awful.widget.layout.horizontal.rightleft,
+      systray,
+    }
   }
 end
 
