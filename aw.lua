@@ -12,7 +12,7 @@ package.cpath = awful.util.getdir('config') .. '/lib/?.so;' .. package.cpath
 -- Themes define colours, icons, and wallpapers
 beautiful.init(awful.util.getdir('config') .. '/theme.lua')
 
-terminal = 'xterm'
+terminal = 'term'
 
 modkey = 'Mod4'
 k_n    = {}
