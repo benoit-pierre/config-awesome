@@ -131,13 +131,20 @@ end
 
 globalkeys = awful.util.table.join(
 
+-- {{{ Client manipulation, global part
+
 awful.key(k_m, 'j', function () awful.client.focus.byidx( 1) if client.focus then client.focus:raise() end end),
 awful.key(k_m, 'k', function () awful.client.focus.byidx(-1) if client.focus then client.focus:raise() end end),
 
--- Standard program
+-- }}}
+
+-- {{{ Programs
+
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
 awful.key(k_mc, 'r', awesome.restart),
 awful.key(k_ms, 'q', awesome.quit)
+
+-- }}}
 
 )
 
