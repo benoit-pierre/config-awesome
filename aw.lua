@@ -19,6 +19,8 @@ k_m    = { modkey }
 k_ms   = { modkey, 'Shift' }
 k_mc   = { modkey, 'Control' }
 
+-- }}}
+
 -- {{{ Tags
 
 -- Define a tag table which hold all screen tags.
@@ -117,3 +119,4 @@ client.add_signal('unfocus', function(c) c.border_color = beautiful.border_norma
 
 -- }}}
 
+-- vim: foldmethod=marker
