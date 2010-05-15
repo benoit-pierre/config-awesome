@@ -21,6 +21,41 @@ k_mc   = { modkey, 'Control' }
 
 -- }}}
 
+-- {{{ Functions
+
+-- {{{ Utils
+
+-- Set background color
+function bg(color, text)
+  return '<bg color="' .. color .. '" />' .. text
+end
+
+-- Set foreground color
+function fg(color, text)
+  return '<span color="' .. color .. '">' .. text .. '</span>'
+end
+
+-- Boldify text
+function bold(text)
+  return '<b>' .. text .. '</b>'
+end
+
+-- Mono font
+function mono(text)
+  return '<span font_desc=">' .. beautiful.font_mono .. '">' .. text .. '</span>'
+end
+
+-- Widget base
+function widget_base(content)
+  if content and content ~= "" then
+    return fg(beautiful.text_hilight, " [ ") .. content .. fg(beautiful.text_hilight, " ] ")
+  end
+end
+
+-- }}}
+
+-- }}}
+
 -- {{{ Tags
 
 -- Define a tag table which hold all screen tags.
@@ -33,6 +68,25 @@ end
 -- }}}
 
 -- {{{ Wibox
+
+-- {{{ Clock widget
+
+-- Just a clock: YY-MM-DD, week/day, HH:MM:SS (numeric timezone)
+function widget_clock()
+  return widget_base(os.date('%F, %V/%a, ' .. bold('%T') .. ' (%z)'))
+end
+
+clockbox = widget({ type = "textbox", align = "left" })
+clockbox.text = widget_clock()
+
+-- Timer updating clock widget every 0.2 second
+clock_timer = timer { timeout = 0.2 }
+clock_timer:add_signal("timeout", function ()
+  clockbox.text = widget_clock()
+end)
+clock_timer:start()
+
+-- }}}
 
 -- {{{ And the wibox itself
 
@@ -55,6 +109,7 @@ for s = 1, screen.count() do
   wibottom[s].widgets =
   {
     layout = awful.widget.layout.horizontal.leftright,
+    clockbox,
   }
 end
 
