@@ -20,6 +20,7 @@ k_n    = {}
 k_m    = { modkey }
 k_ms   = { modkey, 'Shift' }
 k_mc   = { modkey, 'Control' }
+k_mcs  = { modkey, "Control", "Shift" }
 
 -- }}}
 
