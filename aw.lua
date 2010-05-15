@@ -104,10 +104,67 @@ wibottom = {}
 -- Prompt box
 promptbox = {}
 
+-- Tag list {{{
+
+taglist = {}
+taglist.buttons = awful.util.table.join(
+awful.button(k_n, 1, awful.tag.viewonly),
+awful.button(k_m, 1, awful.client.movetotag),
+awful.button(k_n, 3, awful.tag.viewtoggle),
+awful.button(k_m, 3, awful.client.toggletag)
+)
+
+function taglist.label_custom(t, args)
+  if not args then args = {} end
+  local theme = beautiful.get()
+  local fg_focus = args.fg_focus or theme.taglist_fg_focus or theme.fg_focus
+  local bg_focus = args.bg_focus or theme.taglist_bg_focus or theme.bg_focus
+  local fg_urgent = args.fg_urgent or theme.taglist_fg_urgent or theme.fg_urgent
+  local bg_urgent = args.bg_urgent or theme.taglist_bg_urgent or theme.bg_urgent
+  local bg_color = nil
+  local fg_color = nil
+
+  local text = awful.util.escape(t.name)
+
+  local sel = client.focus
+  local cls = t:clients()
+
+  if t.selected then
+    bg_color = bg_focus
+    fg_color = fg_focus
+  end
+
+  if not sel or not sel:tags()[t] then
+    for k, c in pairs(t:clients()) do
+      if c.urgent and not t.selected then
+        if bg_urgent then bg_color = bg_urgent end
+        if fg_urgent then fg_color = fg_urgent end
+        break
+      end
+    end
+  end
+
+  if #cls > 0 then
+    text = bold(text)
+  end
+
+  if bg_color and fg_color then
+    text = fg(fg_color, text)
+  end
+  text = " " .. text .. " "
+  return text, bg_color, nil, nil
+
+end
+
+-- }}}
+
 for s = 1, screen.count() do
 
   -- Create a promptbox for each screen
   promptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
+
+  -- Create a taglist widget
+  taglist[s] = awful.widget.taglist(s, taglist.label_custom, taglist.buttons)
 
   -- Create wiboxes
   witop[s]    = awful.wibox({ position = "top",    screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
@@ -117,6 +174,7 @@ for s = 1, screen.count() do
   witop[s].widgets =
   {
     layout = awful.widget.layout.horizontal.leftright,
+    taglist[s],
   }
 
   wibottom[s].widgets =
