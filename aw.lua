@@ -15,6 +15,7 @@ beautiful.init(awful.util.getdir('config') .. '/theme.lua')
 
 -- Programs
 terminal = 'term'
+screenlocker = 'xtrlock'
 
 -- Modifiers
 modkey = 'Mod4'
@@ -141,6 +142,7 @@ programsmenu =
 -- Session
 sessionmemenu =
 {
+  { 'lock', screenlocker },
   { 'logout', logout },
   { 'reboot', reboot },
   { 'halt', halt },
