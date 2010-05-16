@@ -446,7 +446,8 @@ awful.rules.rules =
       floating = true,
       focus = false,
       ontop = true,
-      sticky = true
+      sticky = true,
+      skip_taskbar = true,
     },
     callback = function (c)
       awful.client.property.set(c, 'nofocus', true)
