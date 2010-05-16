@@ -99,6 +99,35 @@ systray = widget({ type = "systray" })
 
 -- }}}
 
+-- {{{ Menu
+
+-- Awesome
+awesomemenu =
+{
+   { 'restart', awesome.restart },
+   { 'quit', awesome.quit },
+}
+
+-- Programs
+programsmenu =
+{
+    { 'terminal', terminal },
+}
+
+-- Main menu
+mainmenu = awful.menu({
+  items =
+  {
+    { 'programs', programsmenu },
+    { 'awesome', awesomemenu },
+  }
+})
+function mainmenu_toggle()
+  mainmenu:toggle({ keygrabber = true })
+end
+
+-- }}}
+
 -- {{{ And the wibox itself
 
 -- Create a wibox for each screen and add it
@@ -205,6 +234,12 @@ globalkeys = awful.util.table.join(
 
 awful.key(k_m, 'j', function () awful.client.focus.byidx( 1) if client.focus then client.focus:raise() end end),
 awful.key(k_m, 'k', function () awful.client.focus.byidx(-1) if client.focus then client.focus:raise() end end),
+
+-- }}}
+
+-- {{{ Menus
+
+awful.key(k_m, 'Menu', function () mainmenu_toggle() end),
 
 -- }}}
 
