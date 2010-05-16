@@ -301,7 +301,7 @@ awful.key(k_ms, 'q', awesome.quit),
 
 -- {{{ Prompts
 
-awful.key({ modkey }, "r", function () promptbox[mouse.screen]:run() end),
+awful.key({ k_m }, 'r', function () promptbox[mouse.screen]:run() end),
 
 -- }}}
 
@@ -360,8 +360,8 @@ end
 -- Client buttons
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
-    awful.button({ modkey }, 1, awful.mouse.client.move),
-    awful.button({ modkey }, 3, awful.mouse.client.resize))
+    awful.button({ k_m }, 1, awful.mouse.client.move),
+    awful.button({ k_m }, 3, awful.mouse.client.resize))
 
 -- Set keys
 root.keys(globalkeys)
