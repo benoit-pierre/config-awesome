@@ -13,14 +13,16 @@ package.cpath = awful.util.getdir('config') .. '/lib/?.so;' .. package.cpath
 -- Themes define colours, icons, and wallpapers
 beautiful.init(awful.util.getdir('config') .. '/theme.lua')
 
+-- Programs
 terminal = 'term'
 
+-- Modifiers
 modkey = 'Mod4'
 k_n    = {}
 k_m    = { modkey }
 k_ms   = { modkey, 'Shift' }
 k_mc   = { modkey, 'Control' }
-k_mcs  = { modkey, "Control", "Shift" }
+k_mcs  = { modkey, 'Control', 'Shift' }
 
 -- }}}
 
