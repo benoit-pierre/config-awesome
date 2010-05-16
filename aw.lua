@@ -122,6 +122,13 @@ clock_timer:start()
 
 -- }}}
 
+-- Spacer {{{
+
+spacer = widget({ type = "textbox", align = "left" })
+spacer.text = " "
+
+-- }}}
+
 -- Systray {{{
 
 systray = widget({ type = "systray" })
@@ -254,7 +261,9 @@ for s = 1, screen.count() do
   {
     layout = awful.widget.layout.horizontal.leftright,
     menulauncher,
+    spacer,
     taglist[s],
+    spacer,
     tasklist[s],
   }
 
@@ -262,6 +271,7 @@ for s = 1, screen.count() do
   {
     layout = awful.widget.layout.horizontal.leftright,
     clockbox,
+    spacer,
     promptbox[s],
     {
       layout = awful.widget.layout.horizontal.rightleft,
