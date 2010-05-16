@@ -25,6 +25,9 @@ k_ms   = { modkey, 'Shift' }
 k_mc   = { modkey, 'Control' }
 k_mcs  = { modkey, 'Control', 'Shift' }
 
+-- Icons
+awesome_icon = awful.util.getdir('config') .. '/icons/awesome.png'
+
 -- }}}
 
 -- {{{ Functions
@@ -163,6 +166,12 @@ end
 
 -- }}}
 
+-- {{{ Menu launcher
+
+menulauncher = awful.widget.launcher({ image = awesome_icon, menu = mainmenu })
+
+-- }}}
+
 -- {{{ And the wibox itself
 
 -- Create a wibox for each screen and add it
@@ -242,6 +251,7 @@ for s = 1, screen.count() do
   witop[s].widgets =
   {
     layout = awful.widget.layout.horizontal.leftright,
+    menulauncher,
     taglist[s],
   }
 
