@@ -225,7 +225,9 @@ end),
 awful.button(k_n, 5, function ()
   awful.client.focus.byidx(-1)
   if client.focus then client.focus:raise() end
-end))
+end),
+nil
+)
 
 -- }}}
 
