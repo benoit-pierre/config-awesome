@@ -314,7 +314,13 @@ nil
 
 clientkeys = awful.util.table.join(
 awful.key(k_m, 'c', function (c) c:kill() end),
-awful.key(k_m, 'f', awful.client.floating.toggle),
+awful.key(k_m, 'f', function (c)
+  awful.client.floating.toggle(c)
+  if awful.client.property.get(c, 'floating') then
+    awful.placement.no_overlap(c)
+    awful.placement.no_offscreen(c)
+  end
+end),
 nil
 )
 
