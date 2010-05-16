@@ -309,6 +309,16 @@ nil
 
 )
 
+-- {{{ Client manipulation, client part
+
+clientkeys = awful.util.table.join(
+awful.key(k_m, 'c', function (c) c:kill() end),
+awful.key(k_m, 'f', awful.client.floating.toggle),
+nil
+)
+
+-- }}}
+
 -- {{{ Assign keys for each tag
 
 -- Bind keyboard digits
@@ -382,6 +392,7 @@ awful.rules.rules =
       border_color = beautiful.border_normal,
       focus = true,
       size_hints_honor = false,
+      keys = clientkeys,
       buttons = clientbuttons,
     }
   },
