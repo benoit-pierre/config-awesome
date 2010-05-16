@@ -427,6 +427,13 @@ awful.rules.rules =
       awful.client.property.set(c, 'nofocus', true)
     end,
   },
+  {
+    rule = { class = 'Firefox' },
+    properties =
+    {
+      tag = tags[1][2],
+    },
+  },
 }
 
 -- }}}
