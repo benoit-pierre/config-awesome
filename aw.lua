@@ -14,6 +14,7 @@ package.cpath = awful.util.getdir('config') .. '/lib/?.so;' .. package.cpath
 beautiful.init(awful.util.getdir('config') .. '/theme.lua')
 
 -- Programs
+editor = 'gvim -f'
 terminal = 'term'
 screenlocker = 'xtrlock'
 
@@ -132,6 +133,7 @@ systray = widget({ type = "systray" })
 -- Awesome
 awesomemenu =
 {
+   { 'edit config', editor .. ' ' .. awful.util.getdir('config') .. '/aw.lua' },
    { 'restart', awesome.restart },
    { 'quit', awesome.quit },
 }
@@ -139,6 +141,7 @@ awesomemenu =
 -- Programs
 programsmenu =
 {
+    { 'editor', editor },
     { 'terminal', terminal },
 }
 
