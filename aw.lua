@@ -284,6 +284,26 @@ end
 
 -- }}}
 
+-- {{{ MPlayer handling
+
+mplayer = nil
+
+function mplayer_toggle()
+  if not mplayer then
+    return
+  end
+  mplayer.hidden = not mplayer.hidden
+  awful.util.spawn('mp-control pause')
+end
+
+client.add_signal('unmanage', function (c)
+  if mplayer == c then
+    mplayer = nil
+  end
+end)
+
+-- }}}
+
 -- {{{ Key bindings
 
 globalkeys = awful.util.table.join(
@@ -293,6 +313,12 @@ globalkeys = awful.util.table.join(
 awful.key(k_m, 'j', function () awful.client.focus.byidx( 1) if client.focus then client.focus:raise() end end),
 awful.key(k_m, 'k', function () awful.client.focus.byidx(-1) if client.focus then client.focus:raise() end end),
 awful.key(k_m, 'u', awful.client.urgent.jumpto),
+
+-- }}}
+
+-- {{{ MPlayer
+
+awful.key(k_m, 'grave', mplayer_toggle),
 
 -- }}}
 
@@ -425,6 +451,7 @@ awful.rules.rules =
     },
     callback = function (c)
       awful.client.property.set(c, 'nofocus', true)
+      mplayer = c
     end,
   },
   {
