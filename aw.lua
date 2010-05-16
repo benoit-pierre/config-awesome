@@ -301,7 +301,7 @@ for s = 1, screen.count() do
     promptbox[s],
     {
       layout = awful.widget.layout.horizontal.rightleft,
-      systray,
+      s == 1 and systray or nil,
     }
   }
 end
