@@ -59,6 +59,30 @@ end
 
 -- }}}
 
+-- Session handling {{{
+
+function xsession_kill(signal)
+  xsession_pid = os.getenv('XSESSION_PID')
+  os.execute('kill -'..signal..' '..xsession_pid)
+end
+
+function logout()
+  xsession_kill('CONT')
+  awesome.quit()
+end
+
+function reboot()
+  xsession_kill('USR1')
+  logout()
+end
+
+function halt()
+  xsession_kill('USR2')
+  logout()
+end
+
+-- }}}
+
 -- }}}
 
 -- {{{ Tags
@@ -114,11 +138,20 @@ programsmenu =
     { 'terminal', terminal },
 }
 
+-- Session
+sessionmemenu =
+{
+  { 'logout', logout },
+  { 'reboot', reboot },
+  { 'halt', halt },
+}
+
 -- Main menu
 mainmenu = awful.menu({
   items =
   {
     { 'programs', programsmenu },
+    { 'session', sessionmemenu },
     { 'awesome', awesomemenu },
   }
 })
