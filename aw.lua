@@ -238,6 +238,36 @@ end
 
 -- }}}
 
+-- {{{ Tasklist
+
+tasklist = {}
+tasklist.buttons = awful.util.table.join(
+awful.button(k_n, 1, function (c)
+  if not c:isvisible() then
+    awful.tag.viewonly(c:tags()[1])
+  end
+  client.focus = c
+  c:raise()
+end),
+awful.button(k_n, 3, function ()
+  if instance then
+    instance:hide()
+    instance = nil
+  else
+    instance = awful.menu.clients({ width=250 })
+  end
+end),
+awful.button(k_n, 4, function ()
+  awful.client.focus.byidx(1)
+  if client.focus then client.focus:raise() end
+end),
+awful.button(k_n, 5, function ()
+  awful.client.focus.byidx(-1)
+  if client.focus then client.focus:raise() end
+end))
+
+-- }}}
+
 for s = 1, screen.count() do
 
   -- Create a promptbox for each screen
@@ -245,6 +275,11 @@ for s = 1, screen.count() do
 
   -- Create a taglist widget
   taglist[s] = awful.widget.taglist(s, taglist.label_custom, taglist.buttons)
+
+  -- Create a tasklist widget
+  tasklist[s] = awful.widget.tasklist(function(c)
+    return awful.widget.tasklist.label.currenttags(c, s)
+  end, tasklist.buttons)
 
   -- Create wiboxes
   witop[s]    = awful.wibox({ position = "top",    screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
@@ -256,6 +291,7 @@ for s = 1, screen.count() do
     layout = awful.widget.layout.horizontal.leftright,
     menulauncher,
     taglist[s],
+    tasklist[s],
   }
 
   wibottom[s].widgets =
