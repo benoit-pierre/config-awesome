@@ -243,6 +243,7 @@ for s = 1, screen.count() do
   tasklist[s] = awful.widget.tasklist(function(c)
     return awful.widget.tasklist.label.currenttags(c, s)
   end, tasklist.buttons)
+  awful.widget.layout.margins[tasklist[s]] = { right = screen[s].geometry.width / 2 }
 
   -- Create wiboxes
   witop[s]    = awful.wibox({ position = "top",    screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
