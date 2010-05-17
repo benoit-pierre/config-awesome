@@ -316,15 +316,15 @@ awful.key(k_m, 'u', awful.client.urgent.jumpto),
 
 -- }}}
 
--- {{{ MPlayer
-
-awful.key(k_m, 'grave', mplayer_toggle),
-
--- }}}
-
 -- {{{ Menus
 
 awful.key(k_m, 'Menu', function () mainmenu_toggle() end),
+
+-- }}}
+
+-- {{{ MPlayer
+
+awful.key(k_m, 'grave', mplayer_toggle),
 
 -- }}}
 
