@@ -468,6 +468,14 @@ awful.rules.rules =
       tag = tags[1][2],
     },
   },
+  {
+    rule = { class = 'Wine' },
+    properties =
+    {
+      floating = true,
+      tag = tags[1][5],
+    },
+  },
 }
 
 -- }}}
