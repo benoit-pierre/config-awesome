@@ -62,6 +62,16 @@ function widget_base(content)
   end
 end
 
+-- Focus next/previous
+function focus_by_idx(step)
+  awful.client.focus.byidx(step)
+  if client.focus then
+    client.focus:raise()
+  end
+end
+function focus_next() focus_by_idx(1) end
+function focus_previous() focus_by_idx(-1) end
+
 -- }}}
 
 -- Session handling {{{
@@ -225,14 +235,8 @@ awful.button(k_n, 3, function ()
     instance = awful.menu.clients({ width=250 })
   end
 end),
-awful.button(k_n, 4, function ()
-  awful.client.focus.byidx(1)
-  if client.focus then client.focus:raise() end
-end),
-awful.button(k_n, 5, function ()
-  awful.client.focus.byidx(-1)
-  if client.focus then client.focus:raise() end
-end),
+awful.button(k_n, 4, focus_next),
+awful.button(k_n, 5, focus_previous),
 nil
 )
 
@@ -310,8 +314,10 @@ globalkeys = awful.util.table.join(
 
 -- {{{ Client manipulation, global part
 
-awful.key(k_m, 'j', function () awful.client.focus.byidx( 1) if client.focus then client.focus:raise() end end),
-awful.key(k_m, 'k', function () awful.client.focus.byidx(-1) if client.focus then client.focus:raise() end end),
+awful.key(k_m, 'j', focus_next),
+awful.key(k_m, 'k', focus_previous),
+awful.key(k_m, 'Down', focus_next),
+awful.key(k_m, 'Up', focus_previous),
 awful.key(k_m, 'u', awful.client.urgent.jumpto),
 
 -- }}}
