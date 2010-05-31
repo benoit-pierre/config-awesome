@@ -477,6 +477,14 @@ awful.rules.rules =
     },
   },
   {
+    rule = { class = 'Gajim.py' },
+    properties =
+    {
+      floating = true,
+      tag = tags[1][6],
+    },
+  },
+  {
     rule = { name = 'screen-sudo' },
     properties =
     {
