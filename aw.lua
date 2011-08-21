@@ -103,13 +103,34 @@ end
 -- {{{ Tags
 
 -- Define a tag table which hold all screen tags.
+ns = screen.count()
+nw = 8 / screen.count()
+if nw == 0 then nw = 1 end
+wn = 0
+screen_by_tag = {}
+tags_by_num = {}
 tags = {}
 for s = 1, screen.count() do
   -- Each screen has its own tag table.
-  tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8 }, s, awful.layout.suit.max)
+  t = {}
+  for n = 1, nw do t[n] = wn + n end
+  tags[s] = awful.tag(t, s, awful.layout.suit.max)
+  for n = 1, nw do
+    tags_by_num[wn + n] = tags[s][n]
+    screen_by_tag[wn + n] = s
+  end
+  wn = wn + nw
 end
 
 -- }}}
+
+screen_mouse_coords = {}
+for s = 1, screen.count() do
+  g = screen[s].geometry
+  x = g.x + g.width / 2
+  y = g.y + g.height / 2
+  screen_mouse_coords[s] = { x = x; y = y }
+end
 
 -- {{{ Wibox
 
@@ -379,10 +400,7 @@ nil
 
 -- Bind keyboard digits
 -- Compute the maximum number of digit we need, limited to 12
-keynumber = 0
-for s = 1, screen.count() do
-  keynumber = math.min(12, math.max(#tags[s], keynumber));
-end
+keynumber = #tags_by_num
 
 for i = 1, keynumber do
   if i == 11 then
@@ -395,10 +413,13 @@ for i = 1, keynumber do
   globalkeys = awful.util.table.join(globalkeys,
     awful.key(k_m, k,
       function ()
-        local screen = mouse.screen
-        if tags[screen][i] then
-          awful.tag.viewonly(tags[screen][i])
+        ms = mouse.screen
+        ts = screen_by_tag[i]
+        if ms ~= ts then
+          screen_mouse_coords[ms] = mouse.coords()
+          mouse.coords(screen_mouse_coords[ts])
         end
+        awful.tag.viewonly(tags_by_num[i])
       end),
     awful.key(k_mc, k,
       function ()
@@ -409,14 +430,24 @@ for i = 1, keynumber do
       end),
     awful.key(k_ms, k,
       function ()
-        if client.focus and tags[client.focus.screen][i] then
-          awful.client.movetotag(tags[client.focus.screen][i])
+        c = client.focus
+        if c and tags_by_num[i] then
+          cs = c.screen
+          ts = screen_by_tag[i]
+          if ts ~= cs then
+            ms = mouse.coords()
+            awful.client.movetoscreen(c, ts)
+          end
+          awful.client.movetotag(tags_by_num[i])
+          if ts ~= cs then
+            mouse.coords(ms)
+          end
         end
       end),
     awful.key(k_mcs, k,
       function ()
-        if client.focus and tags[client.focus.screen][i] then
-          awful.client.toggletag(tags[client.focus.screen][i])
+        if client.focus and tags_by_num[i] then
+          awful.client.toggletag(tags_by_num[i])
         end
       end))
 end
@@ -471,7 +502,7 @@ awful.rules.rules =
     rule = { class = 'Firefox' },
     properties =
     {
-      tag = tags[1][2],
+      tag = tags_by_num[2],
     },
   },
   {
@@ -479,7 +510,7 @@ awful.rules.rules =
     properties =
     {
       floating = true,
-      tag = tags[1][5],
+      tag = tags_by_num[5],
     },
   },
   {
@@ -487,21 +518,21 @@ awful.rules.rules =
     properties =
     {
       floating = true,
-      tag = tags[1][6],
+      tag = tags_by_num[6],
     },
   },
   {
     rule = { name = 'screen-sudo' },
     properties =
     {
-      tag = tags[1][8],
+      tag = tags_by_num[8],
     },
   },
   {
     rule = { name = 'screen-xsession' },
     properties =
     {
-      tag = tags[1][1],
+      tag = tags_by_num[1],
     },
   },
 }
