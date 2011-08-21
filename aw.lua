@@ -72,6 +72,24 @@ end
 function focus_next() focus_by_idx(1) end
 function focus_previous() focus_by_idx(-1) end
 
+-- Focus next/previous visible client
+function focus_visible_by_idx(step)
+  fc = client.focus
+  nc = fc
+  while true do
+    nc = awful.client.next(step, nc)
+    if not nc or nc == c then
+      break
+    end
+    if nc:isvisible() then
+      client.focus = nc
+      break
+    end
+  end
+end
+function focus_visible_next() focus_visible_by_idx(1) end
+function focus_visible_previous() focus_visible_by_idx(-1) end
+
 -- }}}
 
 -- Session handling {{{
@@ -335,10 +353,26 @@ globalkeys = awful.util.table.join(
 
 -- {{{ Client manipulation, global part
 
-awful.key(k_m, 'j', focus_next),
-awful.key(k_m, 'k', focus_previous),
-awful.key(k_m, 'Down', focus_next),
-awful.key(k_m, 'Up', focus_previous),
+awful.key(k_m, 'Down',
+function ()
+  c = client.focus
+  if c then
+    c:raise()
+  end
+end),
+awful.key(k_m, 'Up',
+function ()
+  c = client.focus
+  if c then
+    c:lower()
+  end
+end),
+awful.key(k_m, 'Left', focus_visible_previous),
+awful.key(k_m, 'Right', focus_visible_next),
+awful.key(k_m, 'h', function () awful.client.focus.bydirection('left') end),
+awful.key(k_m, 'j', function () awful.client.focus.bydirection('down') end),
+awful.key(k_m, 'k', function () awful.client.focus.bydirection('up') end),
+awful.key(k_m, 'l', function () awful.client.focus.bydirection('right') end),
 awful.key(k_m, 'u', awful.client.urgent.jumpto),
 
 -- }}}
