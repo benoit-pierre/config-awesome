@@ -206,6 +206,11 @@ sessionmemenu =
 {
   { 'lock', screenlocker },
   { 'logout', logout },
+}
+
+-- Machine
+machinememenu =
+{
   { 'reboot', reboot },
   { 'halt', halt },
 }
@@ -216,6 +221,7 @@ mainmenu = awful.menu({
   {
     { 'programs', programsmenu },
     { 'session', sessionmemenu },
+    { 'machine', machinememenu },
     { 'awesome', awesomemenu },
   }
 })
