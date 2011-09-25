@@ -7,8 +7,12 @@ require('naughty')
 
 -- {{{ Variable definitions
 
+-- Directories
+config_dir = awful.util.getdir('config')
+icons_dir = config_dir..'/icons'
+
 -- Themes define colours, icons, and wallpapers
-beautiful.init(awful.util.getdir('config') .. '/theme.lua')
+beautiful.init(config_dir..'/theme.lua')
 
 -- Programs
 editor = 'gvim -f'
@@ -24,7 +28,7 @@ k_mc   = { modkey, 'Control' }
 k_mcs  = { modkey, 'Control', 'Shift' }
 
 -- Icons
-awesome_icon = awful.util.getdir('config') .. '/icons/awesome.png'
+awesome_icon = icons_dir..'/awesome.png'
 
 -- }}}
 
@@ -186,7 +190,7 @@ systray = widget({ type = "systray" })
 -- Awesome
 awesomemenu =
 {
-   { 'edit config', editor .. ' ' .. awful.util.getdir('config') .. '/aw.lua' },
+   { 'edit config', editor..' '..config_dir..'/aw.lua' },
    { 'restart', awesome.restart },
    { 'quit', awesome.quit },
 }
