@@ -5,9 +5,6 @@ require('awful.rules')
 require('beautiful')
 require('naughty')
 
-package.path = awful.util.getdir('config') .. '/lib/?.lua;' .. package.path
-package.cpath = awful.util.getdir('config') .. '/lib/?.so;' .. package.cpath
-
 -- {{{ Variable definitions
 
 -- Themes define colours, icons, and wallpapers
