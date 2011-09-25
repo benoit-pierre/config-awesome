@@ -380,6 +380,8 @@ awful.key(k_m, 'j', function () awful.client.focus.bydirection('down') end),
 awful.key(k_m, 'k', function () awful.client.focus.bydirection('up') end),
 awful.key(k_m, 'l', function () awful.client.focus.bydirection('right') end),
 awful.key(k_m, 'u', awful.client.urgent.jumpto),
+awful.key(k_m, 'comma', function () focus_by_idx(-1) end),
+awful.key(k_m, 'period', function () focus_by_idx(1) end),
 
 -- }}}
 
@@ -431,6 +433,8 @@ awful.key(k_m, 'f', function (c)
     awful.placement.no_offscreen(c)
   end
 end),
+awful.key(k_m, 's', function (c) c.sticky = not c.sticky end),
+awful.key(k_m, 't', function (c) c.ontop = not c.ontop end),
 nil
 )
 
