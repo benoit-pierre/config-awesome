@@ -30,6 +30,23 @@ k_mcs  = { modkey, 'Control', 'Shift' }
 -- Icons
 awesome_icon = icons_dir..'/awesome.png'
 
+-- Table of layouts to cover with awful.layout.inc, order matters.
+layouts =
+{
+    awful.layout.suit.floating,
+    awful.layout.suit.tile,
+    awful.layout.suit.tile.left,
+    awful.layout.suit.tile.bottom,
+    awful.layout.suit.tile.top,
+    awful.layout.suit.fair,
+    awful.layout.suit.fair.horizontal,
+    awful.layout.suit.spiral,
+    awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.max,
+    awful.layout.suit.max.fullscreen,
+    awful.layout.suit.magnifier
+}
+
 -- }}}
 
 -- {{{ Functions
@@ -247,6 +264,9 @@ wibottom = {}
 -- Prompt box
 promptbox = {}
 
+-- Layout box
+layoutbox = {}
+
 -- Tag list {{{
 
 taglist = {}
@@ -296,6 +316,15 @@ for s = 1, screen.count() do
   -- Create a taglist widget
   taglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, taglist.buttons)
 
+  -- Create an imagebox widget which will contains an icon indicating which layout we're using.
+  -- We need one layoutbox per screen.
+  layoutbox[s] = awful.widget.layoutbox(s)
+  layoutbox[s]:buttons(awful.util.table.join(
+  awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+  awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
+  awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
+  awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
+
   -- Create a tasklist widget
   tasklist[s] = awful.widget.tasklist(function(c)
     return awful.widget.tasklist.label.currenttags(c, s)
@@ -313,6 +342,8 @@ for s = 1, screen.count() do
     menulauncher,
     spacer,
     taglist[s],
+    spacer,
+    layoutbox[s],
     spacer,
     tasklist[s],
   }
@@ -418,6 +449,8 @@ awful.key(k_m, 'F10', function () awful.util.spawn('setxkbmap dvorak,us && xset 
 awful.key(k_m, 'F11', function () awful.util.spawn('setxkbmap us,dvorak && xset r off') end),
 
 -- }}}
+
+awful.key(k_ms, 'l', function () awful.layout.inc(layouts, 1) end),
 
 nil
 
