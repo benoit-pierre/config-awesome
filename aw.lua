@@ -563,17 +563,10 @@ awful.rules.rules =
     },
   },
   {
-    rule = { name = 'screen-sudo' },
+    rule = { name = 'sudo' },
     properties =
     {
       tag = tags_by_num[8],
-    },
-  },
-  {
-    rule = { name = 'screen-xsession' },
-    properties =
-    {
-      tag = tags_by_num[1],
     },
   },
 }
