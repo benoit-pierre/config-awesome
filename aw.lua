@@ -532,6 +532,7 @@ awful.rules.rules =
       ontop = true,
       sticky = true,
       skip_taskbar = true,
+      size_hints_honor = true,
     },
     callback = function (c)
       awful.client.property.set(c, 'nofocus', true)
