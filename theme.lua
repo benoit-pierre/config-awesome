@@ -28,5 +28,9 @@ theme.wibox_height  = '16'
 
 theme.wallpaper_cmd = { 'xsetroot -solid black' }
 
+-- Display the taglist squares
+theme.taglist_squares_sel   = icons_dir..'/taglist/square_sel.png'
+theme.taglist_squares_unsel = icons_dir..'/taglist/square_unsel.png'
+
 return theme
 
