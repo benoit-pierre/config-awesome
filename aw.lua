@@ -189,6 +189,33 @@ clock_timer:start()
 
 -- }}}
 
+-- {{{ Notmuch mail status
+
+function widget_nmmail()
+  local f = io.popen('notmuch count tag:unread')
+  local s = f:read('*a')
+  local unread = 0 + s
+  local text
+  f:close()
+  if 0 == unread then
+    text = 'no unread mail'
+  else
+    text = bold(unread) .. ' unread mails'
+  end
+  return widget_base(text)
+end
+
+nmmailbox = widget({ type = "textbox", align = "right", name = 'notmuch mail' })
+nmmailbox.text = widget_nmmail()
+
+nmmail_timer = timer { timeout = 60 }
+nmmail_timer:add_signal("timeout", function ()
+  nmmailbox.text = widget_nmmail()
+end)
+nmmail_timer:start()
+
+-- }}}
+
 -- Spacer {{{
 
 spacer = widget({ type = "textbox", align = "left" })
@@ -352,6 +379,7 @@ for s = 1, screen.count() do
   {
     layout = awful.widget.layout.horizontal.leftright,
     clockbox,
+    nmmailbox,
     spacer,
     promptbox[s],
     {
