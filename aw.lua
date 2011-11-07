@@ -200,7 +200,10 @@ function widget_nmmail()
   if 0 == unread then
     text = 'no unread mail'
   else
-    text = bold(unread) .. ' unread mails'
+    text = bold(unread) .. ' unread mail'
+    if 1 ~= unread then
+      text = text .. 's'
+    end
   end
   return widget_base(text)
 end
