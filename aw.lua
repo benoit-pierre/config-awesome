@@ -593,6 +593,13 @@ awful.rules.rules =
     }
   },
   {
+    rule = { name = 'Event Tester' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
     rule = { class = 'MPlayer' },
     properties =
     {
