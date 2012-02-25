@@ -17,6 +17,7 @@ beautiful.init(config_dir..'/theme.lua')
 -- Programs
 editor = 'gvim -f'
 terminal = 'term'
+calculator = 'term -rc calc'
 screenlocker = 'xtrlock'
 
 -- Modifiers
@@ -465,6 +466,7 @@ awful.key(k_m, 'grave', mplayer_toggle),
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
 awful.key(k_mc, 'r', awesome.restart),
 awful.key(k_ms, 'q', awesome.quit),
+awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
 
 -- }}}
 
@@ -594,6 +596,13 @@ awful.rules.rules =
   },
   {
     rule = { name = 'Event Tester' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
+    rule = { name = 'calc' },
     properties =
     {
       floating = true,
