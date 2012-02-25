@@ -622,6 +622,7 @@ awful.rules.rules =
       floating = true,
       tag = tags_by_num[5],
     },
+    callback = function(c) c:geometry({x=0, y=16}) end,
   },
   {
     rule = { class = 'Gajim.py' },
