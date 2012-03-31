@@ -415,6 +415,21 @@ client.add_signal('unmanage', function (c)
   end
 end)
 
+function mplayer_callback(c)
+  awful.client.property.set(c, 'nofocus', true)
+  mplayer = c
+end
+
+mplayer_properties =
+{
+  floating = true,
+  focus = false,
+  ontop = true,
+  sticky = true,
+  skip_taskbar = true,
+  size_hints_honor = true,
+}
+
 -- }}}
 
 -- {{{ Key bindings
@@ -610,19 +625,13 @@ awful.rules.rules =
   },
   {
     rule = { class = 'MPlayer' },
-    properties =
-    {
-      floating = true,
-      focus = false,
-      ontop = true,
-      sticky = true,
-      skip_taskbar = true,
-      size_hints_honor = true,
-    },
-    callback = function (c)
-      awful.client.property.set(c, 'nofocus', true)
-      mplayer = c
-    end,
+    properties = mplayer_properties,
+    callback = mplayer_callback,
+  },
+  {
+    rule = { class = 'Smplayer' },
+    properties = mplayer_properties,
+    callback = mplayer_callback,
   },
   {
     rule = { class = 'Firefox' },
