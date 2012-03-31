@@ -624,6 +624,13 @@ awful.rules.rules =
     },
   },
   {
+    rule = { class = 'Klavaro' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
     rule = { class = 'MPlayer' },
     properties = mplayer_properties,
     callback = mplayer_callback,
