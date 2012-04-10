@@ -406,7 +406,12 @@ function mplayer_toggle()
     return
   end
   mplayer.hidden = not mplayer.hidden
-  awful.util.spawn('mp-control pause')
+  if mplayer.hidden then
+    cmd = 'pausing_keep_force pause'
+  else
+    cmd = 'pause'
+  end
+  awful.util.spawn('mp-control '..mplayer.pid..' '..cmd)
 end
 
 client.add_signal('unmanage', function (c)
