@@ -662,7 +662,7 @@ awful.rules.rules =
     callback = function(c) c:geometry({x=0, y=16}) end,
   },
   {
-    rule = { class = 'Gajim.py' },
+    rule = { class = 'Gajim' },
     properties =
     {
       floating = true,
