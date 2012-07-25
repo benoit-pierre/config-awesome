@@ -497,8 +497,9 @@ awful.key(k_m, 'r', function () promptbox[mouse.screen]:run() end),
 
 -- {{{ Xkb layout
 
-awful.key(k_m, 'F10', function () awful.util.spawn('setxkbmap dvorak,us && xset r on') end),
-awful.key(k_m, 'F11', function () awful.util.spawn('setxkbmap us,dvorak && xset r off') end),
+awful.key(k_m, 'F10', function () awful.util.spawn('setxkbd') end),
+awful.key(k_m, 'F11', function () awful.util.spawn('setxkbmap us') end),
+awful.key(k_m, 'F12', function () awful.util.spawn('setxkbmap fr') end),
 
 -- }}}
 
