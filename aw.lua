@@ -463,7 +463,6 @@ awful.key(k_m, 'h', function () awful.client.focus.bydirection('left') end),
 awful.key(k_m, 'j', function () awful.client.focus.bydirection('down') end),
 awful.key(k_m, 'k', function () awful.client.focus.bydirection('up') end),
 awful.key(k_m, 'l', function () awful.client.focus.bydirection('right') end),
-awful.key(k_m, 'u', awful.client.urgent.jumpto),
 awful.key(k_m, 'comma', function () focus_by_idx(-1) end),
 awful.key(k_m, 'period', function () focus_by_idx(1) end),
 
