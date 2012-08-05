@@ -1,8 +1,8 @@
 -- Catch errors and fallback to /etc/xdg/awesome/rc.lua if aw.lua fails
 -- a la http://www.markurashi.de/dotfiles/awesome/rc.lua
 
-require('awful')
-require('naughty')
+local awful = require('awful')
+local naughty = require('naughty')
 
 local rc, err = loadfile(awful.util.getdir('config') .. '/aw.lua')
 if rc then

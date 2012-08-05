@@ -1,7 +1,7 @@
 
-require('awful')
-require('awful.rules')
-require('beautiful')
+local awful = require('awful')
+awful.rules = require('awful.rules')
+local beautiful = require('beautiful')
 
 -- {{{ Variable definitions
 
