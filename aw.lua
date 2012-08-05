@@ -653,6 +653,16 @@ awful.rules.rules =
     callback = mplayer_callback,
   },
   {
+    rule = { class = 'Umplayer' },
+    properties = mplayer_properties,
+    callback = mplayer_callback,
+  },
+  {
+    rule = { class = 'Vlc' },
+    properties = mplayer_properties,
+    callback = mplayer_callback,
+  },
+  {
     rule = { class = 'Firefox' },
     properties =
     {
