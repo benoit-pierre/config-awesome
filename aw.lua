@@ -1,9 +1,9 @@
 
-require('awful')
-require('awful.autofocus')
-require('awful.rules')
-require('beautiful')
-require('naughty')
+local awful = require('awful')
+awful.autofocus = require('awful.autofocus')
+awful.rules = require('awful.rules')
+local beautiful = require('beautiful')
+local naughty = require('naughty')
 
 -- {{{ Variable definitions
 
