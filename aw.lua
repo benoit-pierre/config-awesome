@@ -629,6 +629,13 @@ awful.rules.rules =
     },
   },
   {
+    rule = { class = 'Amphetype.py' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
     rule = { class = 'Klavaro' },
     properties =
     {
