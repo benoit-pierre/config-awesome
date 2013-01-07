@@ -357,6 +357,7 @@ awful.key(k_m, 'o', function () focus_by_idx(1) end),
 -- {{{ Menus
 
 awful.key(k_m, 'Menu', function () mainmenu_toggle() end),
+awful.key(k_m, 'm', function () mainmenu_toggle() end),
 
 -- }}}
 
