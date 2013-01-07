@@ -371,7 +371,9 @@ awful.key(k_m, 'grave', mplayer_toggle),
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
 awful.key(k_mc, 'r', awesome.restart),
 awful.key(k_ms, 'q', awesome.quit),
+
 awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
+awful.key(k_n, 'XF86Eject', function () awful.util.spawn('eject -T') end),
 
 -- }}}
 
