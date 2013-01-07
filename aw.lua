@@ -5,7 +5,27 @@ awful.rules = require('awful.rules')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
 
--- {{{ Variable definitions
+-- {{{ Global variable definitions
+
+-- Awesome version
+aw_ver = '???'
+if awesome.version:match('v3[.]4[.]?') then
+  aw_ver = '3.4'
+end
+if awesome.version:match('v3[.]5[.]?') then
+  aw_ver = '3.5'
+end
+
+if '3.4' == aw_ver then
+  function connect_signal(instance, ...)
+    instance.add_signal(...)
+  end
+end
+if '3.5' == aw_ver then
+  function connect_signal(instance, ...)
+    instance.connect_signal(...)
+  end
+end
 
 -- Directories
 config_dir = awful.util.getdir('config')
@@ -54,33 +74,6 @@ layouts =
 
 -- {{{ Utils
 
--- Set background color
-function bg(color, text)
-  return '<bg color="' .. color .. '" />' .. text
-end
-
--- Set foreground color
-function fg(color, text)
-  return '<span color="' .. color .. '">' .. text .. '</span>'
-end
-
--- Boldify text
-function bold(text)
-  return '<b>' .. text .. '</b>'
-end
-
--- Mono font
-function mono(text)
-  return '<span font_desc=">' .. beautiful.font_mono .. '">' .. text .. '</span>'
-end
-
--- Widget base
-function widget_base(content)
-  if content and content ~= "" then
-    return fg(beautiful.text_hilight, " [ ") .. content .. fg(beautiful.text_hilight, " ] ")
-  end
-end
-
 -- Focus next/previous
 function focus_by_idx(step)
   awful.client.focus.byidx(step)
@@ -93,8 +86,8 @@ function focus_previous() focus_by_idx(-1) end
 
 -- Focus next/previous visible client
 function focus_visible_by_idx(step)
-  fc = client.focus
-  nc = fc
+  local fc = client.focus
+  local nc = fc
   while true do
     nc = awful.client.next(step, nc)
     if not nc or nc == c then
@@ -137,19 +130,22 @@ end
 
 -- }}}
 
+-- Must be sourced after global functions/variables definitions.
+local widgets = require('widgets')
+
 -- {{{ Tags
 
 -- Define a tag table which hold all screen tags.
-ns = screen.count()
-nw = 8 / screen.count()
+local ns = screen.count()
+local nw = 8 / screen.count()
 if nw == 0 then nw = 1 end
-wn = 0
+local wn = 0
 screen_by_tag = {}
 tags_by_num = {}
 tags = {}
 for s = 1, screen.count() do
   -- Each screen has its own tag table.
-  t = {}
+  local t = {}
   for n = 1, nw do t[n] = wn + n end
   tags[s] = awful.tag(t, s, awful.layout.suit.max)
   for n = 1, nw do
@@ -163,75 +159,11 @@ end
 
 screen_mouse_coords = {}
 for s = 1, screen.count() do
-  g = screen[s].geometry
-  x = g.x + g.width / 2
-  y = g.y + g.height / 2
+  local g = screen[s].geometry
+  local x = g.x + g.width / 2
+  local y = g.y + g.height / 2
   screen_mouse_coords[s] = { x = x; y = y }
 end
-
--- {{{ Wibox
-
--- {{{ Clock widget
-
--- Just a clock: YY-MM-DD, week/day, HH:MM:SS (numeric timezone)
-function widget_clock()
-  return widget_base(os.date('%F, %V/%a, ' .. bold('%T') .. ' (%z)'))
-end
-
-clockbox = widget({ type = "textbox", align = "left" })
-clockbox.text = widget_clock()
-
--- Timer updating clock widget every 0.2 second
-clock_timer = timer { timeout = 0.2 }
-clock_timer:add_signal("timeout", function ()
-  clockbox.text = widget_clock()
-end)
-clock_timer:start()
-
--- }}}
-
--- {{{ Notmuch mail status
-
-function widget_nmmail()
-  local f = io.popen('notmuch count tag:unread')
-  local s = f:read('*a')
-  local unread = 0 + s
-  local text
-  f:close()
-  if 0 == unread then
-    text = 'no unread mail'
-  else
-    text = bold(unread) .. ' unread mail'
-    if 1 ~= unread then
-      text = text .. 's'
-    end
-  end
-  return widget_base(text)
-end
-
-nmmailbox = widget({ type = "textbox", align = "right", name = 'notmuch mail' })
-nmmailbox.text = widget_nmmail()
-
-nmmail_timer = timer { timeout = 60 }
-nmmail_timer:add_signal("timeout", function ()
-  nmmailbox.text = widget_nmmail()
-end)
-nmmail_timer:start()
-
--- }}}
-
--- Spacer {{{
-
-spacer = widget({ type = "textbox", align = "left" })
-spacer.text = " "
-
--- }}}
-
--- Systray {{{
-
-systray = widget({ type = "systray" })
-
--- }}}
 
 -- {{{ Menu
 
@@ -280,117 +212,70 @@ end
 
 -- }}}
 
--- {{{ Menu launcher
-
-menulauncher = awful.widget.launcher({ image = awesome_icon, menu = mainmenu })
-
--- }}}
-
 -- {{{ And the wibox itself
 
 -- Create a wibox for each screen and add it
 witop = {}
 wibottom = {}
 
--- Prompt box
-promptbox = {}
+-- Clock box
+clockbox = widgets.clock()
 
 -- Layout box
 layoutbox = {}
 
--- Tag list {{{
+-- Menu launcher
+menulauncher = awful.widget.launcher({ image = awesome_icon, menu = mainmenu })
 
+-- Notmuch mail status
+nmmailbox = widgets.notmuch()
+
+-- Prompt box
+promptbox = {}
+
+-- Systray
+systray = widgets.systray()
+
+-- Taglist
 taglist = {}
-taglist.buttons = awful.util.table.join(
-awful.button(k_n, 1, awful.tag.viewonly),
-awful.button(k_m, 1, awful.client.movetotag),
-awful.button(k_n, 3, awful.tag.viewtoggle),
-awful.button(k_m, 3, awful.client.toggletag),
-awful.button(k_n, 4, awful.tag.viewnext),
-awful.button(k_n, 5, awful.tag.viewprev),
-nil
-)
 
--- }}}
-
--- {{{ Tasklist
-
+-- Tasklist
 tasklist = {}
-tasklist.buttons = awful.util.table.join(
-awful.button(k_n, 1, function (c)
-  if not c:isvisible() then
-    awful.tag.viewonly(c:tags()[1])
-  end
-  client.focus = c
-  c:raise()
-end),
-awful.button(k_n, 3, function ()
-  if instance then
-    instance:hide()
-    instance = nil
-  else
-    instance = awful.menu.clients({ width=250 })
-  end
-end),
-awful.button(k_n, 4, focus_next),
-awful.button(k_n, 5, focus_previous),
-nil
-)
-
--- }}}
 
 for s = 1, screen.count() do
 
-  -- Create a promptbox for each screen
-  promptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
-
-  -- Create a taglist widget
-  taglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, taglist.buttons)
-
-  -- Create an imagebox widget which will contains an icon indicating which layout we're using.
-  -- We need one layoutbox per screen.
-  layoutbox[s] = awful.widget.layoutbox(s)
-  layoutbox[s]:buttons(awful.util.table.join(
-  awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-  awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-  awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-  awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
-
-  -- Create a tasklist widget
-  tasklist[s] = awful.widget.tasklist(function(c)
-    return awful.widget.tasklist.label.currenttags(c, s)
-  end, tasklist.buttons)
-  awful.widget.layout.margins[tasklist[s]] = { right = screen[s].geometry.width / 2 }
+  -- Per screen widgets
+  layoutbox[s] = widgets.layoutbox(s)
+  promptbox[s] = awful.widget.prompt()
+  taglist[s] = widgets.taglist(s)
+  tasklist[s] = widgets.tasklist(s)
 
   -- Create wiboxes
-  witop[s]    = awful.wibox({ position = "top",    screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
-  wibottom[s] = awful.wibox({ position = "bottom", screen = s, height = beautiful.wibox_height, fg = beautiful.fg_normal, bg = beautiful.bg_normal })
 
-  -- Add widgets to wiboxes - order matters
-  witop[s].widgets =
+  witop[s] = widgets.wibox('top', s,
   {
-    layout = awful.widget.layout.horizontal.leftright,
+    -- Left widgets
     menulauncher,
-    spacer,
     taglist[s],
-    spacer,
     layoutbox[s],
-    spacer,
     tasklist[s],
-  }
-
-  wibottom[s].widgets =
+  },
   {
-    layout = awful.widget.layout.horizontal.leftright,
+    -- Right widgets
+  })
+
+  wibottom[s] = widgets.wibox('bottom', s,
+  {
+    -- Left widgets
     clockbox,
     nmmailbox,
-    spacer,
     promptbox[s],
-    {
-      layout = awful.widget.layout.horizontal.rightleft,
-      s == 1 and systray or nil,
-    }
-  }
+  },
+  {
+    -- Right widgets
+    s == 1 and systray or nil,
+  })
+
 end
 
 -- }}}
@@ -406,6 +291,7 @@ function mplayer_toggle()
     return
   end
   mplayer.hidden = not mplayer.hidden
+  local cmd
   if mplayer.hidden then
     cmd = 'pausing_keep_force pause'
   else
@@ -414,7 +300,7 @@ function mplayer_toggle()
   awful.util.spawn('mp-control '..mplayer.pid..' '..cmd)
 end
 
-client.add_signal('unmanage', function (c)
+connect_signal(client, 'unmanage', function (c)
   if mplayer == c then
     mplayer = nil
   end
@@ -531,9 +417,10 @@ nil
 
 -- Bind keyboard digits
 -- Compute the maximum number of digit we need, limited to 12
-keynumber = #tags_by_num
+local keynumber = #tags_by_num
 
 for i = 1, keynumber do
+  local k
   if i == 11 then
     k = "minus"
   elseif i == 12 then
@@ -544,8 +431,8 @@ for i = 1, keynumber do
   globalkeys = awful.util.table.join(globalkeys,
     awful.key(k_m, k,
       function ()
-        ms = mouse.screen
-        ts = screen_by_tag[i]
+        local ms = mouse.screen
+        local ts = screen_by_tag[i]
         if ms ~= ts then
           screen_mouse_coords[ms] = mouse.coords()
           mouse.coords(screen_mouse_coords[ts])
@@ -561,10 +448,11 @@ for i = 1, keynumber do
       end),
     awful.key(k_ms, k,
       function ()
-        c = client.focus
+        local c = client.focus
         if c and tags_by_num[i] then
-          cs = c.screen
-          ts = screen_by_tag[i]
+          local cs = c.screen
+          local ts = screen_by_tag[i]
+          local ms
           if ts ~= cs then
             ms = mouse.coords()
             awful.client.movetoscreen(c, ts)
@@ -715,10 +603,10 @@ awful.client.focus.filter = focus_filter
 -- {{{ Signals
 
 -- Signal function to execute when a new client appears.
-client.add_signal('manage', function (c, startup)
+connect_signal(client, 'manage', function (c, startup)
 
   -- Enable sloppy focus
-  c:add_signal('mouse::enter', function(c)
+  connect_signal(c, c, 'mouse::enter', function(c)
     if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
       and awful.client.focus.filter(c) then
       client.focus = c
@@ -734,8 +622,8 @@ client.add_signal('manage', function (c, startup)
   end
 end)
 
-client.add_signal('focus', function(c) c.border_color = beautiful.border_focus end)
-client.add_signal('unfocus', function(c) c.border_color = beautiful.border_normal end)
+connect_signal(client, 'focus', function(c) c.border_color = beautiful.border_focus end)
+connect_signal(client, 'unfocus', function(c) c.border_color = beautiful.border_normal end)
 
 -- }}}
 
