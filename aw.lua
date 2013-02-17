@@ -416,6 +416,26 @@ nil
 
 -- }}}
 
+-- {{{ Client (automatic) bottom left placement
+
+function place_bottom_left(c)
+  local g = c:geometry()
+  local s = screen[c.screen]
+  local y = (s.geometry.height - (g.height + beautiful.wibox_height))
+  if awful.client.property.get(c, 'old_width') ~= g.width and y ~= g.y then
+    awful.client.property.set(c, 'old_width', g.width)
+    g.y = y
+    c:geometry(g)
+  end
+end
+
+function setup_autoplace_bottom_left(c)
+  place_bottom_left(c)
+  connect_signal(c, c, 'property::height', place_bottom_left)
+end
+
+-- }}}
+
 -- {{{ Assign keys for each tag
 
 -- Bind keyboard digits
@@ -567,7 +587,7 @@ awful.rules.rules =
       floating = true,
       tag = tags_by_num[5],
     },
-    callback = function(c) c:geometry({x=0, y=16}) end,
+    callback = setup_autoplace_bottom_left,
   },
   {
     rule = { class = 'Gajim' },
