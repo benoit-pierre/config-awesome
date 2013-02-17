@@ -533,6 +533,14 @@ awful.rules.rules =
     },
   },
   {
+    rule = { name = '.*Steam' },
+    properties =
+    {
+      floating = true,
+      tag = tags_by_num[5],
+    },
+  },
+  {
     rule = { name = 'calc' },
     properties =
     {
