@@ -533,14 +533,6 @@ awful.rules.rules =
     },
   },
   {
-    rule = { name = '.*Steam' },
-    properties =
-    {
-      floating = true,
-      tag = tags_by_num[5],
-    },
-  },
-  {
     rule = { name = 'calc' },
     properties =
     {
@@ -561,6 +553,7 @@ awful.rules.rules =
       floating = true,
     },
   },
+  -- {{{ Media players
   {
     rule = { class = 'MPlayer' },
     properties = mplayer_properties,
@@ -581,11 +574,21 @@ awful.rules.rules =
     properties = mplayer_properties,
     callback = mplayer_callback,
   },
+  -- }}}
   {
     rule = { class = 'Firefox' },
     properties =
     {
       tag = tags_by_num[2],
+    },
+  },
+  -- {{{ Games
+  {
+    rule = { name = '.*Steam' },
+    properties =
+    {
+      floating = true,
+      tag = tags_by_num[5],
     },
   },
   {
@@ -597,6 +600,7 @@ awful.rules.rules =
     },
     callback = setup_autoplace_bottom_left,
   },
+  -- }}}
   {
     rule = { class = 'Gajim' },
     properties =
