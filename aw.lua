@@ -575,6 +575,7 @@ awful.rules.rules =
     callback = mplayer_callback,
   },
   -- }}}
+  -- {{{ Firefox
   {
     rule = { class = 'Firefox' },
     properties =
@@ -582,6 +583,15 @@ awful.rules.rules =
       tag = tags_by_num[2],
     },
   },
+  -- Fix for fullscreen flash videos
+  {
+    rule = { class = 'Plugin-container' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  -- }}}
   -- {{{ Games
   {
     rule = { name = '.*Steam' },
