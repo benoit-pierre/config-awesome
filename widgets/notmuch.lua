@@ -8,7 +8,7 @@ local notmuch = {}
 function notmuch.status()
   local f = io.popen('notmuch count tag:unread')
   local s = f:read('*a')
-  local unread = 0 + s
+  local unread = tonumber(s) or 0
   local text
   f:close()
   if 0 == unread then
