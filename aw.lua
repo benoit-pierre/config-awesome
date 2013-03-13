@@ -20,10 +20,16 @@ if '3.4' == aw_ver then
   function connect_signal(instance, ...)
     instance.add_signal(...)
   end
+  function disconnect_signal(instance, ...)
+    instance.remove_signal(...)
+  end
 end
 if '3.5' == aw_ver then
   function connect_signal(instance, ...)
     instance.connect_signal(...)
+  end
+  function disconnect_signal(instance, ...)
+    instance.disconnect_signal(...)
   end
 end
 
@@ -642,6 +648,20 @@ function focus_filter(c)
 end
 
 awful.client.focus.filter = focus_filter
+
+orig_focus_history_add = awful.client.focus.history.add
+
+function focus_history_add(c)
+  if awful.client.property.get(c, 'nofocus') then
+    return
+  end
+  orig_focus_history_add(c)
+end
+
+awful.client.focus.history.add = focus_history_add
+
+disconnect_signal(client, 'focus', orig_focus_history_add)
+connect_signal(client, 'focus', focus_history_add)
 
 --- }}}
 
