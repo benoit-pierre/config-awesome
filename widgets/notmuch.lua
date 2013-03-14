@@ -2,6 +2,11 @@
 
 local utils = require('widgets.utils')
 
+-- Start by checking notmuch is actually present and configured.
+if not os.execute('notmuch config get database.path') then
+  return utils.dummy
+end
+
 local timeout = 60
 local notmuch = {}
 
@@ -22,33 +27,12 @@ function notmuch.status()
   return utils.widget_base(text)
 end
 
-if '3.4' == aw_ver then
-
-  notmuch._new = function(t)
-    local w = widget { type = 'textbox' }
-    t:add_signal('timeout', function() w.text = notmuch.status() end)
-    return w
-  end
-
-end
-
-if '3.5' == aw_ver then
-
-  local wibox = require('wibox')
-
-  notmuch._new = function(t)
-    local w = wibox.widget.textbox()
-    t:connect_signal('timeout', function() w:set_markup(notmuch.status()) end)
-    return w
-  end
-
-end
-
 function notmuch.new()
+  local w = utils.textbox()
   local t = timer { timeout = timeout }
-  local w = notmuch._new(t)
-  t:start()
+  connect_signal(t, t, 'timeout', function() w:set_markup(notmuch.status()) end)
   t:emit_signal('timeout')
+  t:start()
   return w
 end
 
