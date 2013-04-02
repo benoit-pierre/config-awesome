@@ -600,7 +600,7 @@ awful.rules.rules =
   -- }}}
   -- {{{ Games
   {
-    rule = { name = '.*Steam' },
+    rule = { class = 'Steam' },
     properties =
     {
       floating = true,
