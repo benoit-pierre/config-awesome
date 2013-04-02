@@ -553,6 +553,17 @@ awful.rules.rules =
     },
   },
   {
+    rule = { name = 'Plover:.*' },
+    properties =
+    {
+      focus = false,
+      ontop = true,
+      sticky = true,
+      floating = true,
+      skip_taskbar = true,
+    },
+  },
+  {
     rule = { class = 'Klavaro' },
     properties =
     {
