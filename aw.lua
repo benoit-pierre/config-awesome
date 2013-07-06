@@ -118,7 +118,6 @@ function xsession_kill(signal)
 end
 
 function logout()
-  xsession_kill('CONT')
   awesome.quit()
 end
 
