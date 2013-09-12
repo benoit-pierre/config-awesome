@@ -785,4 +785,4 @@ connect_signal(client, 'unfocus', function(c) c.border_color = beautiful.border_
 
 -- }}}
 
--- vim: foldmethod=marker
+-- vim: foldmethod=marker foldlevel=0
