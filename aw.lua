@@ -733,7 +733,21 @@ awful.rules.rules =
     },
   },
   {
+    rule = { class = 'Xephyr' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
     rule = { class = 'Xmessage' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
+    rule = { name = 'Xnest' },
     properties =
     {
       floating = true,
