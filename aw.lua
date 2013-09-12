@@ -1,6 +1,5 @@
 
 local awful = require('awful')
-awful.autofocus = require('awful.autofocus')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
 
@@ -749,19 +748,12 @@ end
 
 awful.client.focus.filter = focus_filter
 
-orig_focus_history_add = awful.client.focus.history.add
+-- }}}
 
-function focus_history_add(c)
-  if awful.client.property.get(c, 'nofocus') then
-    return
-  end
-  orig_focus_history_add(c)
-end
+-- {{{ Autofocus handling.
 
-awful.client.focus.history.add = focus_history_add
-
-disconnect_signal(client, 'focus', orig_focus_history_add)
-connect_signal(client, 'focus', focus_history_add)
+-- Use custom version with correct handling of sticky clients.
+require('autofocus')
 
 --- }}}
 
