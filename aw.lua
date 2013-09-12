@@ -674,9 +674,16 @@ awful.rules.rules =
     callback = mplayer_callback,
   },
   -- }}}
-  -- {{{ Firefox
+  -- {{{ Browsers
   {
     rule = { class = 'Firefox' },
+    properties =
+    {
+      tag = tags_by_num[2],
+    },
+  },
+  {
+    rule = { class = 'Google-chrome' },
     properties =
     {
       tag = tags_by_num[2],
