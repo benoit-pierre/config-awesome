@@ -601,13 +601,6 @@ awful.rules.rules =
     }
   },
   {
-    rule = { name = 'Event Tester' },
-    properties =
-    {
-      floating = true,
-    },
-  },
-  {
     rule = { name = 'calc' },
     properties =
     {
@@ -731,6 +724,22 @@ awful.rules.rules =
       tag = tags_by_num[8],
     },
   },
+  -- {{{ X utilities
+  {
+    rule = { name = 'Event Tester' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
+    rule = { class = 'Xmessage' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  -- }}}
 }
 
 -- }}}
