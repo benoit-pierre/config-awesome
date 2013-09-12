@@ -108,6 +108,20 @@ end
 function focus_visible_next() focus_visible_by_idx(1) end
 function focus_visible_previous() focus_visible_by_idx(-1) end
 
+-- Will check configuration is still valid before restarting.
+function awesome_restart()
+  local config = awful.util.getdir('config') .. '/aw.lua'
+  local rc, err = loadfile(config)
+  if rc then
+    awesome.restart()
+    return
+  end
+  naughty.notify {
+    text = 'Invalid configuration:\n\n' .. err .. '\n\nAborting restart.',
+    timeout = 0,
+  }
+end
+
 -- }}}
 
 -- Session handling {{{
@@ -176,7 +190,7 @@ end
 awesomemenu =
 {
    { 'edit config', editor..' '..config_dir..'/aw.lua' },
-   { 'restart', awesome.restart },
+   { 'restart', awesome_restart },
    { 'quit', awesome.quit },
 }
 
@@ -375,7 +389,7 @@ awful.key(k_m, 'grave', mplayer_toggle),
 -- {{{ Programs
 
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
-awful.key(k_mc, 'r', awesome.restart),
+awful.key(k_mc, 'r', awesome_restart),
 awful.key(k_ms, 'q', awesome.quit),
 
 awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
