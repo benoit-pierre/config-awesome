@@ -1,7 +1,6 @@
 
 local awful = require('awful')
 awful.autofocus = require('awful.autofocus')
-awful.rules = require('awful.rules')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
 
@@ -528,6 +527,8 @@ root.keys(globalkeys)
 -- }}}
 
 -- {{{ Rules
+
+awful.rules = require('awful.rules')
 
 awful.rules.rules =
 {
