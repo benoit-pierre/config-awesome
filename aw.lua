@@ -158,7 +158,6 @@ local ns = screen.count()
 local nw = 8 / screen.count()
 if nw == 0 then nw = 1 end
 local wn = 0
-screen_by_tag = {}
 tags_by_num = {}
 tags = {}
 for s = 1, screen.count() do
@@ -168,7 +167,6 @@ for s = 1, screen.count() do
   tags[s] = awful.tag(t, s, awful.layout.suit.max)
   for n = 1, nw do
     tags_by_num[wn + n] = tags[s][n]
-    screen_by_tag[wn + n] = s
   end
   wn = wn + nw
 end
@@ -472,35 +470,37 @@ for i = 1, keynumber do
   globalkeys = awful.util.table.join(globalkeys,
     awful.key(k_m, k,
       function ()
+        local t = tags_by_num[i]
         local ms = mouse.screen
-        local ts = screen_by_tag[i]
+        local ts = awful.tag.getscreen(t)
         if ms ~= ts then
           screen_mouse_coords[ms] = mouse.coords()
           mouse.coords(screen_mouse_coords[ts])
         end
-        awful.tag.viewonly(tags_by_num[i])
+        awful.tag.viewonly(t)
       end),
     awful.key(k_mc, k,
       function ()
-        local screen = mouse.screen
-        if tags[screen][i] then
-          awful.tag.viewtoggle(tags[screen][i])
+        local ms = mouse.screen
+        if tags[ms][i] then
+          awful.tag.viewtoggle(tags[ms][i])
         end
       end),
     awful.key(k_ms, k,
       function ()
         local c = client.focus
         if c and tags_by_num[i] then
+          local mc
           local cs = c.screen
-          local ts = screen_by_tag[i]
-          local ms
+          local t = tags_by_num[i]
+          local ts = awful.tag.getscreen(t)
           if ts ~= cs then
-            ms = mouse.coords()
+            mc = mouse.coords()
             awful.client.movetoscreen(c, ts)
           end
-          awful.client.movetotag(tags_by_num[i])
+          awful.client.movetotag(t)
           if ts ~= cs then
-            mouse.coords(ms)
+            mouse.coords(mc)
           end
         end
       end),
