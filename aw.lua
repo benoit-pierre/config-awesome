@@ -313,6 +313,10 @@ end
 
 mplayer = nil
 
+function mplayer_control(cmd)
+  awful.util.spawn('mp-control '..mplayer.pid..' '..cmd)
+end
+
 function mplayer_toggle()
   if not mplayer then
     return
@@ -320,22 +324,63 @@ function mplayer_toggle()
   mplayer.hidden = not mplayer.hidden
   local cmd
   if mplayer.hidden then
-    cmd = 'pausing_keep_force pause'
-  else
     cmd = 'pause'
+  else
+    cmd = 'resume'
   end
-  awful.util.spawn('mp-control '..mplayer.pid..' '..cmd)
+  mplayer_control(cmd)
 end
 
-connect_signal(client, 'unmanage', function (c)
-  if mplayer == c then
-    mplayer = nil
+function mplayer_place(c)
+
+  if c.fullscreen or not awful.client.floating.get(c) then
+    return
   end
-end)
+
+  local g = c:geometry()
+  local s = screen[c.screen]
+
+  -- Place on top right of the screen.
+  local ng = {
+    x = s.geometry.width - g.width - c.border_width,
+    y = beautiful.wibox_height + c.border_width,
+    width = g.width,
+    height = g.height,
+  }
+
+  if ng.x ~= g.x or ng.y ~= g.y then
+    c:geometry(ng)
+  end
+
+end
 
 function mplayer_callback(c)
-  awful.client.property.set(c, 'nofocus', true)
+
   mplayer = c
+
+  awful.client.property.set(c, 'nofocus', true)
+
+  -- Placement, need to be delayed for MPlayer/Vlc...
+  c.hidden = true
+  local t = timer { timeout = 0.5 }
+  connect_signal(t, t, 'timeout', function ()
+    t:stop()
+    mplayer_place(c)
+    c.hidden = false
+  end)
+  t:start()
+
+  connect_signal(c, c, 'unmanage', function (c)
+    mplayer = nil
+  end)
+
+  -- Restore ontop property when leaving fullscreen.
+  connect_signal(c, c, 'property::fullscreen', function (c)
+    if not c.fullscreen and awful.client.floating.get(c) then
+      c.ontop = true
+    end
+  end)
+
 end
 
 mplayer_properties =
