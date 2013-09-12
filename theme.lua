@@ -24,7 +24,7 @@ theme.battery_low   = '#ff4444'
 
 theme.text_hilight  = '#aacc88'
 
-theme.wibox_height  = '16'
+theme.wibox_height  = '22'
 
 theme.wallpaper_cmd = { 'xsetroot -solid black' }
 
