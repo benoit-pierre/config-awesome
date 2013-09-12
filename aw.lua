@@ -585,6 +585,11 @@ awful.rules.rules =
   },
   -- {{{ Media players
   {
+    rule = { class = 'mpv' },
+    properties = mplayer_properties,
+    callback = mplayer_callback,
+  },
+  {
     rule = { class = 'MPlayer' },
     properties = mplayer_properties,
     callback = mplayer_callback,
