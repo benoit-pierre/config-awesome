@@ -12,7 +12,7 @@ if rc then
     end
 end
 
-naughty.notify { text = 'Awesome crashed during startup on ' .. os.date('%F %T:\n\n') ..  err .. '\n', timeout = 0 }
+naughty.notify { text = 'Awesome crashed during startup:\n\n' .. err .. '\n\nFalling back on recovery configuration.', timeout = 0 }
 
 dofile(awful.util.getdir('config') .. '/aw-recovery.lua')
 
