@@ -566,6 +566,13 @@ awful.rules.rules =
     },
   },
   {
+    rule = { class = 'Pavucontrol' },
+    properties =
+    {
+      floating = true,
+    },
+  },
+  {
     rule = { name = 'Plover:.*' },
     properties =
     {
