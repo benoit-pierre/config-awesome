@@ -79,6 +79,17 @@ layouts =
 
 -- {{{ Utils
 
+-- Print a client geometry.
+function geometry_print(h, g)
+  local vorqm = function(v) if v then return v else return '?' end end
+  if g then
+    s = string.format('%s+%s:%sx%s', vorqm(g.x), vorqm(g.y), vorqm(g.width), vorqm(g.height))
+  else
+    s = '????'
+  end
+  print(h..': '..s)
+end
+
 -- Focus next/previous
 function focus_by_idx(step)
   awful.client.focus.byidx(step)
