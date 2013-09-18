@@ -8,6 +8,11 @@ function utils.bold(text)
   return '<b>' .. text .. '</b>'
 end
 
+-- Highlight text
+function utils.hilight(text)
+  return utils.fg(beautiful.text_hilight, text)
+end
+
 -- Set foreground color
 function utils.fg(color, text)
   return '<span color="' .. color .. '">' .. text .. '</span>'
@@ -21,7 +26,7 @@ end
 -- Widget base
 function utils.widget_base(content)
   if content and content ~= "" then
-    return utils.fg(beautiful.text_hilight, " [ ") .. content .. utils.fg(beautiful.text_hilight, " ] ")
+    return utils.hilight(" [ ") .. content .. utils.hilight(" ] ")
   end
 end
 
