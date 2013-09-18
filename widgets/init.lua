@@ -4,6 +4,7 @@ local widgets =
   clock = require('widgets.clock');
   layoutbox = require('widgets.layoutbox');
   notmuch = require('widgets.notmuch');
+  nvperf = require('widgets.nvperf');
   systray = require('widgets.systray');
   taglist = require('widgets.taglist');
   tasklist = require('widgets.tasklist');
