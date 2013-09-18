@@ -4,7 +4,7 @@ local utils = require('widgets.utils')
 local awful = require('awful')
 
 -- Just a clock: YY-MM-DD, week/day, HH:MM (numeric timezone)
-local format = ' ' .. utils.bold('%F') .. ', %V/%a, ' .. utils.bold('%H:%M') .. ' (%z) '
+local format = utils.widget_base(utils.bold('%F') .. ', %V/%a, ' .. utils.bold('%H:%M') .. ' (%z)')
 local timeout = 5
 local clock = {}
 
