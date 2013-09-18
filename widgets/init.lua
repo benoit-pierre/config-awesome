@@ -8,6 +8,7 @@ local widgets =
   systray = require('widgets.systray');
   taglist = require('widgets.taglist');
   tasklist = require('widgets.tasklist');
+  timer = require('widgets.timer');
   utils = require('widgets.utils');
   wibox = require('widgets.wibox');
 }
