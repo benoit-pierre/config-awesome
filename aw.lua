@@ -119,8 +119,7 @@ function focus_visible_previous() focus_visible_by_idx(-1) end
 
 -- Will check configuration is still valid before restarting.
 function awesome_restart()
-  local config = awful.util.getdir('config') .. '/aw.lua'
-  local rc, err = loadfile(config)
+  local rc, err = loadfile(awful.util.getdir('config') .. '/aw.lua')
   if rc then
     awesome.restart()
     return
