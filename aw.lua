@@ -238,6 +238,12 @@ clockbox = widgets.clock()
 -- Layout box
 layoutbox = {}
 
+-- Media players handling.
+players = widgets.players()
+function players_callback(c, startup)
+  players:manage(c, startup)
+end
+
 -- Menu launcher
 menulauncher = awful.widget.launcher({ image = awesome_icon, menu = mainmenu })
 
@@ -279,6 +285,7 @@ for s = 1, screen.count() do
   },
   {
     -- Right widgets
+    players.widget,
   })
 
   wibottom[s] = widgets.wibox('bottom', s,
@@ -299,121 +306,6 @@ for s = 1, screen.count() do
 end
 
 -- }}}
-
--- }}}
-
--- {{{ Multimedia players handling
-
-players = {}
-
-function player_control(c, cmd)
-  c = c or players[1]
-  if not c then
-    return
-  end
-  awful.util.spawn('mp-control '..c.pid..' '..cmd)
-end
-
-function player_toggle(c)
-  c = c or players[1]
-  if not c then
-    return
-  end
-  c.hidden = not c.hidden
-  local cmd
-  if c.hidden then
-    cmd = 'pause'
-  else
-    cmd = 'resume'
-  end
-  player_control(c, cmd)
-end
-
-function player_place(c)
-
-  c = c or players[1]
-  if not c then
-    return
-  end
-
-  if c.fullscreen or not awful.client.floating.get(c) then
-    return
-  end
-
-  local g = c:geometry()
-  local s = screen[c.screen]
-
-  -- Place on top right of the screen.
-  local ng = {
-    x = s.geometry.width - g.width - c.border_width,
-    y = beautiful.wibox_height + c.border_width,
-    width = g.width,
-    height = g.height,
-  }
-
-  if ng.x ~= g.x or ng.y ~= g.y then
-    c:geometry(ng)
-  end
-
-end
-
-function player_callback(c)
-
-  -- Hide and pause previous player.
-  local pc = players[1]
-  if pc then
-    player_control(pc, 'pause')
-    pc.hidden = true
-  end
-
-  -- Add to the list.
-  table.insert(players, 1, c)
-
-  -- Remove from list on exit, and show/resume previous player (if applicable).
-  connect_signal(c, c, 'unmanage', function (c)
-    for k, v in ipairs(players) do
-      if v == c then
-        table.remove(players, k)
-      end
-    end
-    local pc = players[1]
-    if pc and pc.hidden then
-      pc.hidden = false
-      player_control(pc, 'resume')
-    end
-  end)
-
-  -- Force click to focus.
-  awful.client.property.set(c, 'nofocus', true)
-
-  -- Placement, need to be delayed for MPlayer/Vlc...
-  c.hidden = true
-  local t = timer { timeout = 0.1 }
-  connect_signal(t, t, 'timeout', function ()
-    t:stop()
-    player_place(c)
-    c.hidden = false
-  end)
-  t:start()
-
-  -- Restore ontop property when leaving fullscreen.
-  connect_signal(c, c, 'property::fullscreen', function (c)
-    if not c.fullscreen and awful.client.floating.get(c) then
-      c.ontop = true
-    end
-  end)
-
-end
-
-player_properties =
-{
-  floating = true,
-  focus = false,
-  ontop = true,
-  sticky = true,
-  skip_taskbar = true,
-  size_hints_honor = true,
-}
 
 -- }}}
 
@@ -457,7 +349,7 @@ awful.key(k_m, 'm', function () mainmenu_toggle() end),
 
 -- {{{ Media players
 
-awful.key(k_m, 'grave', player_toggle),
+awful.key(k_m, 'grave', function () players:toggle() end),
 
 -- }}}
 
@@ -665,28 +557,28 @@ awful.rules.rules =
   -- {{{ Media players
   {
     rule = { class = 'mpv' },
-    properties = player_properties,
-    callback = player_callback,
+    properties = players.properties,
+    callback = players_callback,
   },
   {
     rule = { class = 'MPlayer' },
-    properties = player_properties,
-    callback = player_callback,
+    properties = players.properties,
+    callback = players_callback,
   },
   {
     rule = { class = 'Smplayer' },
-    properties = player_properties,
-    callback = player_callback,
+    properties = players.properties,
+    callback = players_callback,
   },
   {
     rule = { class = 'Umplayer' },
-    properties = player_properties,
-    callback = player_callback,
+    properties = players.properties,
+    callback = players_callback,
   },
   {
     rule = { class = 'Vlc' },
-    properties = player_properties,
-    callback = player_callback,
+    properties = players.properties,
+    callback = players_callback,
   },
   -- }}}
   -- {{{ Browsers

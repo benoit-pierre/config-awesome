@@ -5,6 +5,7 @@ local widgets =
   layoutbox = require('widgets.layoutbox');
   notmuch = require('widgets.notmuch');
   nvperf = require('widgets.nvperf');
+  players = require('widgets.players');
   systray = require('widgets.systray');
   taglist = require('widgets.taglist');
   tasklist = require('widgets.tasklist');
