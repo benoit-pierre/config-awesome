@@ -308,29 +308,39 @@ end
 
 -- }}}
 
--- {{{ MPlayer handling
+-- {{{ Multimedia players handling
 
-mplayer = nil
+players = {}
 
-function mplayer_control(cmd)
-  awful.util.spawn('mp-control '..mplayer.pid..' '..cmd)
-end
-
-function mplayer_toggle()
-  if not mplayer then
+function player_control(c, cmd)
+  c = c or players[1]
+  if not c then
     return
   end
-  mplayer.hidden = not mplayer.hidden
+  awful.util.spawn('mp-control '..c.pid..' '..cmd)
+end
+
+function player_toggle(c)
+  c = c or players[1]
+  if not c then
+    return
+  end
+  c.hidden = not c.hidden
   local cmd
-  if mplayer.hidden then
+  if c.hidden then
     cmd = 'pause'
   else
     cmd = 'resume'
   end
-  mplayer_control(cmd)
+  player_control(c, cmd)
 end
 
-function mplayer_place(c)
+function player_place(c)
+
+  c = c or players[1]
+  if not c then
+    return
+  end
 
   if c.fullscreen or not awful.client.floating.get(c) then
     return
@@ -353,25 +363,44 @@ function mplayer_place(c)
 
 end
 
-function mplayer_callback(c)
+function player_callback(c)
 
-  mplayer = c
+  -- Hide and pause previous player.
+  local pc = players[1]
+  if pc then
+    player_control(pc, 'pause')
+    pc.hidden = true
+  end
 
+  -- Add to the list.
+  table.insert(players, 1, c)
+
+  -- Remove from list on exit, and show/resume previous player (if applicable).
+  connect_signal(c, c, 'unmanage', function (c)
+    for k, v in ipairs(players) do
+      if v == c then
+        table.remove(players, k)
+      end
+    end
+    local pc = players[1]
+    if pc and pc.hidden then
+      pc.hidden = false
+      player_control(pc, 'resume')
+    end
+  end)
+
+  -- Force click to focus.
   awful.client.property.set(c, 'nofocus', true)
 
   -- Placement, need to be delayed for MPlayer/Vlc...
   c.hidden = true
-  local t = timer { timeout = 0.5 }
+  local t = timer { timeout = 0.1 }
   connect_signal(t, t, 'timeout', function ()
     t:stop()
-    mplayer_place(c)
+    player_place(c)
     c.hidden = false
   end)
   t:start()
-
-  connect_signal(c, c, 'unmanage', function (c)
-    mplayer = nil
-  end)
 
   -- Restore ontop property when leaving fullscreen.
   connect_signal(c, c, 'property::fullscreen', function (c)
@@ -382,7 +411,7 @@ function mplayer_callback(c)
 
 end
 
-mplayer_properties =
+player_properties =
 {
   floating = true,
   focus = false,
@@ -432,9 +461,9 @@ awful.key(k_m, 'm', function () mainmenu_toggle() end),
 
 -- }}}
 
--- {{{ MPlayer
+-- {{{ Media players
 
-awful.key(k_m, 'grave', mplayer_toggle),
+awful.key(k_m, 'grave', player_toggle),
 
 -- }}}
 
@@ -642,28 +671,28 @@ awful.rules.rules =
   -- {{{ Media players
   {
     rule = { class = 'mpv' },
-    properties = mplayer_properties,
-    callback = mplayer_callback,
+    properties = player_properties,
+    callback = player_callback,
   },
   {
     rule = { class = 'MPlayer' },
-    properties = mplayer_properties,
-    callback = mplayer_callback,
+    properties = player_properties,
+    callback = player_callback,
   },
   {
     rule = { class = 'Smplayer' },
-    properties = mplayer_properties,
-    callback = mplayer_callback,
+    properties = player_properties,
+    callback = player_callback,
   },
   {
     rule = { class = 'Umplayer' },
-    properties = mplayer_properties,
-    callback = mplayer_callback,
+    properties = player_properties,
+    callback = player_callback,
   },
   {
     rule = { class = 'Vlc' },
-    properties = mplayer_properties,
-    callback = mplayer_callback,
+    properties = player_properties,
+    callback = player_callback,
   },
   -- }}}
   -- {{{ Browsers
