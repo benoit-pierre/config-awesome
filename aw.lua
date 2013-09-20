@@ -272,6 +272,9 @@ for s = 1, screen.count() do
     menulauncher,
     taglist[s],
     layoutbox[s],
+  },
+  {
+    -- Middle widgets
     tasklist[s],
   },
   {
@@ -284,6 +287,9 @@ for s = 1, screen.count() do
     clockbox,
     nmmailbox,
     promptbox[s],
+  },
+  {
+    -- Middle widgets
   },
   {
     -- Right widgets

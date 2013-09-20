@@ -19,6 +19,14 @@ if '3.4' == aw_ver then
       end
     end
 
+    if middle_widgets then
+      for k, v in pairs(middle_widgets) do
+        if v then
+          table.insert(layout, v)
+        end
+      end
+    end
+
     if right_widgets then
       local right = {}
       right.layout = awful.widget.layout.horizontal.rightleft
@@ -37,36 +45,39 @@ end
 
 if '3.5' == aw_ver then
 
-  wibox._set_widgets = function(w, left_widgets, right_widgets)
+  wibox._set_widgets = function(w, left_widgets, middle_widgets, right_widgets)
+
     local wibox = require('wibox')
     local layout = wibox.layout.align.horizontal()
 
-    if left_widgets then
-      local left_layout = wibox.layout.fixed.horizontal()
-      for k, v in pairs(left_widgets) do
+    local function layout_set(layout, position, widgets)
+      if not widgets then
+        return
+      end
+      local new_layout = wibox.layout.fixed.horizontal()
+      local new_layout_empty = true
+      for k, v in pairs(widgets) do
         if v then
-          left_layout:add(v)
+          new_layout_empty = false
+          new_layout:add(v)
         end
       end
-      layout:set_left(left_layout)
+      if not new_layout_empty then
+        layout['set_'..position](layout, new_layout)
+      end
     end
 
-    if right_widgets then
-      local right_layout = wibox.layout.fixed.horizontal()
-      for k, v in pairs(right_widgets) do
-        if v then
-          right_layout:add(v)
-        end
-      end
-      layout:set_right(right_layout)
-    end
+    layout_set(layout, 'left', left_widgets)
+    layout_set(layout, 'middle', middle_widgets)
+    layout_set(layout, 'right', right_widgets)
 
     w:set_widget(layout)
+
   end
 
 end
 
-function wibox.new(position, screen, left_widgets, right_widgets)
+function wibox.new(position, screen, left_widgets, middle_widgets, right_widgets)
   local t =
   {
     position = position,
@@ -77,7 +88,7 @@ function wibox.new(position, screen, left_widgets, right_widgets)
   }
   local w = awful.wibox(t)
 
-  wibox._set_widgets(w, left_widgets, right_widgets)
+  wibox._set_widgets(w, left_widgets, middle_widgets, right_widgets)
 
   return w
 end
