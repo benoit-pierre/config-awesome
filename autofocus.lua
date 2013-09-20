@@ -81,15 +81,17 @@ if focus_debug then
     print(str)
   end
 
-  focus_history_print = function ()
+  focus_history_print = function (scr)
     local str = 'global_focus_history '
     for k, v in ipairs(global_focus_history) do
       print(str .. client_tostring(v))
     end
     for tag_num, t in ipairs(tags_by_num) do
-      local tag_str = 'tag_focus_history ' .. tag_tostring(t) .. ' '
-      for k, v in ipairs(tag_focus_history[tag_num]) do
-        print(tag_str .. client_tostring(v))
+      if scr == awful.tag.getscreen(t) and t.selected then
+        local tag_str = 'tag_focus_history ' .. tag_tostring(t) .. ' '
+        for k, v in ipairs(tag_focus_history[tag_num]) do
+          print(tag_str .. client_tostring(v))
+        end
       end
     end
   end
@@ -114,7 +116,6 @@ local function focus_history_del(c)
     tag_focus_history_del(tag_num, c)
   end
   global_focus_history_del(c)
-  focus_history_print()
 end
 
 -- Add client to global and currently selected tag histories.
@@ -129,7 +130,6 @@ local function focus_history_add(c)
       tag_focus_history_add(tag_num, c)
     end
   end
-  focus_history_print()
 end
 
 -- Get the latest focus entry from histories.
@@ -168,16 +168,39 @@ function focus_history_get(scr)
   end
 end
 
+local function focus_check_fullscreen(c)
+  if not c then
+    return false
+  end
+  focus_msg('focus_check_fullscreen', c.name, c.fullscreen, c:isvisible())
+  return c.screen == mouse.screen and c.fullscreen and c:isvisible()
+end
+
 local function focus_check()
+  local c = client.focus
   local ms = mouse.screen
   focus_msg('focus_check ' .. ms)
   focus_print()
-  focus_history_print()
-  local c = focus_history_get(ms)
+  -- Keep focus on fullscreen client.
+  if focus_check_fullscreen(c) then
+    return
+  end
+  focus_history_print(ms)
+  c = focus_history_get(ms)
   if c and c ~= client.focus then
     client.focus = c
     focus_print()
   end
+end
+
+local function on_visibility_change(c)
+  focus_msg('focus_check', c)
+  -- Re-focus fullscreen client when it become visible again.
+  if focus_check_fullscreen(c) then
+    client.focus = c
+    return
+  end
+  focus_check()
 end
 
 connect_signal(client, 'focus', focus_history_add)
@@ -186,7 +209,7 @@ connect_signal(client, 'unmanage', focus_history_del)
 connect_signal(tag, 'property::selected', focus_check)
 connect_signal(client, 'unmanage', focus_check)
 connect_signal(client, 'untagged', focus_check)
-connect_signal(client, 'property::hidden', focus_check)
-connect_signal(client, 'property::minimized', focus_check)
+connect_signal(client, 'property::hidden', on_visibility_change)
+connect_signal(client, 'property::minimized', on_visibility_change)
 
 -- vim: foldmethod=marker foldlevel=0
