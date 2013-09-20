@@ -41,5 +41,23 @@ function utils.tag_tostring(t)
   return str
 end
 
+-- Serialize data to a file so we can reload it later with loadfile.
+function utils.serialize(f, left_value, value)
+  if 'table' == type(value) then
+    f:write(left_value, ' = {}\n')
+    for k, v in pairs(value) do
+      local field
+      if 'number' == type(k) then
+        field = '['..tostring(k)..']'
+      else
+        field = '.'..tostring(k)
+      end
+      utils.serialize(f, left_value..field, v)
+    end
+  else
+    f:write(left_value, ' = ', tostring(value), '\n')
+  end
+end
+
 return utils
 

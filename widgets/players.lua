@@ -93,45 +93,53 @@ function w.unmanage(w, c)
 
 end
 
-function w.manage(w, c)
+function w.manage(w, c, startup_idx)
 
-  -- Hide and pause previous player.
-  local pc = w.players[1]
-  if pc then
-    w:control(pc, 'pause')
-    pc.hidden = true
+  if not startup_idx then
+
+    -- Hide and pause previous player.
+    local pc = w.players[1]
+    if pc then
+      w:control(pc, 'pause')
+      pc.hidden = true
+    end
+
+    -- Force click to focus.
+    awful.client.property.set(c, 'nofocus', true)
+
+    -- Placement, need to be delayed for MPlayer/Vlc...
+    c.hidden = true
+    local t = timer { timeout = 0.1 }
+    connect_signal(t, t, 'timeout', function ()
+      t:stop()
+      w:place(c)
+      c.hidden = false
+    end)
+    t:start()
+
   end
 
   -- Add to the list.
-  table.insert(w.players, 1, c)
+  if startup_idx then
+    w.players[startup_idx] = c
+  else
+    table.insert(w.players, 1, c)
+  end
 
   -- Remove from list on exit, and show/resume previous player (if applicable).
   connect_signal(c, c, 'unmanage', w.on_unmanage)
-
-  -- Force click to focus.
-  awful.client.property.set(c, 'nofocus', true)
-
-  -- Placement, need to be delayed for MPlayer/Vlc...
-  c.hidden = true
-  local t = timer { timeout = 0.1 }
-  connect_signal(t, t, 'timeout', function ()
-    t:stop()
-    w:place(c)
-    c.hidden = false
-  end)
-  t:start()
-
-  -- Hide fullscreen client when loosing focus.
-  connect_signal(c, c, 'unfocus', function (c)
-    if c.fullscreen then
-      w:toggle(c)
-    end
-  end)
 
   -- Restore ontop property when leaving fullscreen.
   connect_signal(c, c, 'property::fullscreen', function (c)
     if not c.fullscreen and awful.client.floating.get(c) then
       c.ontop = true
+    end
+  end)
+
+  -- Hide fullscreen client when loosing focus.
+  connect_signal(c, c, 'unfocus', function (c)
+    if c.fullscreen then
+      w:toggle(c)
     end
   end)
 
@@ -265,6 +273,18 @@ function w.select_end(w)
   w.selection = nil
 
   w:refresh()
+
+end
+
+function w.state(w)
+
+  local state = {}
+
+  for k, v in ipairs(w.players) do
+    state[v.window] = k
+  end
+
+  return state
 
 end
 

@@ -78,6 +78,8 @@ layouts =
 
 -- {{{ Utils
 
+local utils = require('utils')
+
 -- Focus next/previous
 function focus_by_idx(step)
   awful.client.focus.byidx(step)
@@ -106,10 +108,103 @@ end
 function focus_visible_next() focus_visible_by_idx(1) end
 function focus_visible_previous() focus_visible_by_idx(-1) end
 
+-- }}}
+
+-- State handling {{{
+
+local state = {}
+
+state.filename = awful.util.getdir('config') .. '/state_' .. os.getenv('DISPLAY')
+
+state.client_fields = {
+  'above',
+  'below',
+  'fullscreen',
+  'hidden',
+  'maximized_horizontal',
+  'maximized_vertical',
+  'minimized',
+  'ontop',
+  'screen',
+  'size_hints_honor',
+  'sticky',
+  'urgent',
+}
+
+state.client_properties = {
+  'floating_geometry',
+  'floating',
+  'nofocus',
+}
+
+state.state = nil
+
+function state.save()
+
+  local s = {}
+
+  -- Global state.
+  s.focus = client.focus and client.focus.window
+  s.players = players:state()
+
+  -- Clients state.
+  for c in awful.client.iterate(function () return true end) do
+    local client_state = {}
+    for k, v in ipairs(state.client_properties) do
+      client_state[v] = awful.client.property.get(c, v)
+    end
+    for k, v in ipairs(state.client_fields) do
+      client_state[v] = c[v]
+    end
+    client_state.geometry = c:geometry()
+    s[c.window] = client_state
+  end
+
+  -- Write it...
+  local f = io.open(state.filename, 'w+')
+  f:write('local state\n')
+  utils.serialize(f, 'state', s)
+  f:write('return state\n')
+  f:close()
+
+end
+
+function state.restore()
+
+  -- Do we have a state file?
+  if not awful.util.file_readable(state.filename) then
+    return
+  end
+
+  -- Read it.
+  local rc, err = loadfile(state.filename)
+  if rc then
+    rc, err = pcall(rc)
+  end
+  if not rc then
+    -- Rename state file for later inspection.
+    os.rename(state.filename, state.filename..'~')
+    naughty.notify {
+      text = 'Error loading state file:\n\n' .. err,
+      timeout = 0,
+    }
+    return
+  end
+
+  -- And remove it so we don't try to read it later.
+  os.remove(state.filename)
+
+  state.state = err
+
+end
+
+state.restore()
+
 -- Will check configuration is still valid before restarting.
 function awesome_restart()
   local rc, err = loadfile(awful.util.getdir('config') .. '/aw.lua')
   if rc then
+    state.save()
     awesome.restart()
     return
   end
@@ -240,8 +335,8 @@ layoutbox = {}
 
 -- Media players handling.
 players = widgets.players()
-function players_callback(c, startup)
-  players:manage(c, startup)
+function players_callback(c, startup_idx)
+  players:manage(c, startup_idx)
 end
 
 -- Menu launcher
@@ -507,12 +602,8 @@ awful.rules.rules =
     rule = { },
     properties =
     {
-      border_width = beautiful.border_width,
-      border_color = beautiful.border_normal,
       focus = true,
       size_hints_honor = false,
-      keys = clientkeys,
-      buttons = clientbuttons,
     }
   },
   {
@@ -697,24 +788,80 @@ require('autofocus')
 
 -- {{{ Signals
 
+-- No 'started' signal, so use this crude hack...
+local starting = true
+local t = timer { timeout = 0.5 }
+connect_signal(t, t, 'timeout', function ()
+  starting = false
+  t:stop()
+  t = nil
+end)
+t:start()
+
+disconnect_signal(client, 'manage', awful.rules.apply)
+
 -- Signal function to execute when a new client appears.
 connect_signal(client, 'manage', function (c, startup)
 
   -- Enable sloppy focus
   connect_signal(c, c, 'mouse::enter', function(c)
-    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+    if not starting
+      and awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
       and awful.client.focus.filter(c) then
       client.focus = c
     end
   end)
 
-  if not startup then
+  c.border_width = beautiful.border_width
+  c.border_color = beautiful.border_normal
+  c:buttons(clientbuttons)
+  c:keys(clientkeys)
+
+  local state_restored = false
+
+  if startup then
+
+    -- Try to restore state.
+    local client_state = state.state and state.state[c.window]
+
+    if client_state then
+
+      for k, v in ipairs(state.client_properties) do
+        awful.client.property.set(c, v, client_state[v])
+      end
+      for k, v in ipairs(state.client_fields) do
+        c[v] = client_state[v]
+      end
+      c:geometry(client_state.geometry)
+
+      local startup_idx = state.state.players[c.window]
+      if startup_idx then
+        players_callback(c, startup_idx)
+      end
+
+      if state.state.focus == c.window then
+        awful.client.jumpto(c)
+      end
+
+      state_restored = true
+
+    end
+
+  end
+
+  if not state_restored then
+
     -- Put windows in a smart way, only if they does not set an initial position.
     if not c.size_hints.user_position and not c.size_hints.program_position then
       awful.placement.no_overlap(c)
       awful.placement.no_offscreen(c)
     end
+
+    -- Apply rules.
+    awful.rules.apply(c)
+
   end
+
 end)
 
 connect_signal(client, 'focus', function(c) c.border_color = beautiful.border_focus end)
