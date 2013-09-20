@@ -64,30 +64,13 @@ local focus_history_print
 
 if focus_debug then
 
-  client_tostring = function (c)
-    local str = string.format('%08x', c.window)
-    if c.name then
-      str = str .. '[' .. c.name .. ']'
-    end
-    if c:isvisible() then
-      str = str .. '+'
-    end
-    if client.focus == c then
-      str = str .. '*'
-    end
-    return str
-  end
+  local utils = require('utils')
 
-  tag_tostring = function (t)
-    local str = awful.tag.getscreen(t) .. '.' .. t.name
-    if t.selected then
-      str = str .. '*'
-    end
-    return str
-  end
+  client_tostring = utils.client_tostring
+  tag_tostring = utils.tag_tostring
 
-  focus_msg = function (str)
-    print(str)
+  focus_msg = function (...)
+    print(...)
   end
 
   focus_print = function ()
