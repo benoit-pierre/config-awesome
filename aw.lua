@@ -2,6 +2,7 @@
 local awful = require('awful')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
+local utils = require('utils')
 
 -- {{{ Global variable definitions
 
@@ -74,11 +75,7 @@ layouts =
 
 -- }}}
 
--- {{{ Functions
-
--- {{{ Utils
-
-local utils = require('utils')
+-- {{{ Functions for client focus.
 
 -- Focus next/previous
 function focus_by_idx(step)
@@ -236,8 +233,6 @@ function halt()
   xsession_kill('USR2')
   logout()
 end
-
--- }}}
 
 -- }}}
 
