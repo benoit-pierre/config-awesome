@@ -5,16 +5,16 @@ theme.font          = 'Dejavu Sans 9'
 theme.font_mono     = 'Dejavu Sans Mono 9'
 
 theme.bg_normal     = '#111111'
-theme.bg_focus      = '#aacc88'
-theme.bg_urgent     = '#111111'
+theme.bg_focus      = '#464646'
+theme.bg_urgent     = '#aacc88'
 
 theme.fg_normal     = '#cccccc'
-theme.fg_focus      = '#000000'
+theme.fg_focus      = '#cccccc'
 theme.fg_urgent     = '#cc7766'
 
 theme.border_width  = '1'
-theme.border_normal = '#111111'
-theme.border_focus  = '#333333'
+theme.border_normal = '#333333'
+theme.border_focus  = '#6a6a6a'
 
 theme.naughty_fg    = '#aacc88'
 theme.naughty_bg    = '#222222'
@@ -22,7 +22,7 @@ theme.naughty_cri   = '#cc7766'
 
 theme.battery_low   = '#ff4444'
 
-theme.text_hilight  = '#aacc88'
+theme.text_hilight  = '#cc7766'
 
 theme.wibox_height  = '22'
 
