@@ -136,9 +136,17 @@ function w.manage(w, c, startup_idx)
     end
   end)
 
+  -- Raise and give back focus when fullscreen and not hidden anymore.
+  connect_signal(c, c, 'property::hidden', function (c)
+    if c.fullscreen and not c.hidden then
+      client.focus = c
+      c:raise()
+    end
+  end)
+
   -- Hide fullscreen client when loosing focus.
   connect_signal(c, c, 'unfocus', function (c)
-    if c.fullscreen then
+    if c.fullscreen and not c.hidden then
       w:toggle(c)
     end
   end)
