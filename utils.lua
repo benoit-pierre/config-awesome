@@ -15,6 +15,15 @@ function utils.client_tostring(c)
   if c.fullscreen then
     str = str .. 'f'
   end
+  if c.hidden then
+    str = str .. 'h'
+  end
+  if c.sticky then
+    str = str .. 's'
+  end
+  if c.ontop then
+    str = str .. 't'
+  end
   if client.focus == c then
     str = str .. '*'
   end
