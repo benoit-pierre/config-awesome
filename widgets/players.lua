@@ -58,7 +58,7 @@ function w.place(w, c)
 
   -- Place on top right of the screen.
   local ng = {
-    x = s.geometry.width - g.width - c.border_width,
+    x = s.geometry.width - g.width - 2 * c.border_width,
     y = beautiful.wibox_height + c.border_width,
     width = g.width,
     height = g.height,
@@ -128,6 +128,11 @@ function w.manage(w, c, startup_idx)
 
   -- Remove from list on exit, and show/resume previous player (if applicable).
   connect_signal(c, c, 'unmanage', w.on_unmanage)
+
+  -- Show progress when entering window.
+  connect_signal(c, c, 'mouse::enter', function (c)
+    w:control(c, 'show-progress')
+  end)
 
   -- Restore ontop property when leaving fullscreen.
   connect_signal(c, c, 'property::fullscreen', function (c)
