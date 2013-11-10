@@ -305,8 +305,8 @@ function players.new()
 
   local w = awful.util.table.clone(w)
 
-  w.players = {};
-  w.widget = utils.textbox();
+  w.players = {}
+  w.widget = utils.textbox()
   w.on_unmanage = function (c) w:unmanage(c) end
 
   w.widget:buttons(awful.util.table.join(
