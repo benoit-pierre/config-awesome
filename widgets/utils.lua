@@ -41,10 +41,13 @@ end
 if '3.4' == aw_ver then
 
   function utils.textbox()
-    local w = widget { type = 'textbox' }
-    function w.set_markup(w, t)
-      w.text = t
-    end
+    local w = {
+      widget = widget { type = 'textbox' };
+      add_signal = function (w, ...) w.widget:add_signal(...) end;
+      set_markup = function (w, t) w.widget.text = t end;
+      buttons = function (w, t) w.widget:buttons(t) end;
+    }
+    return w
   end
 
 end

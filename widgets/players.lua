@@ -77,10 +77,17 @@ function w.unmanage(w, c)
     return
   end
 
+  local managed = false
+
   for k, v in ipairs(w.players) do
     if v == c then
+      managed = true
       table.remove(w.players, k)
     end
+  end
+
+  if not managed then
+    return
   end
 
   local pc = w.players[1]
@@ -125,9 +132,6 @@ function w.manage(w, c, startup_idx)
   else
     table.insert(w.players, 1, c)
   end
-
-  -- Remove from list on exit, and show/resume previous player (if applicable).
-  connect_signal(c, c, 'unmanage', w.on_unmanage)
 
   -- Show progress when entering window.
   connect_signal(c, c, 'mouse::enter', function (c)
@@ -240,8 +244,6 @@ function w.select_kill(w)
 
   c = w.players[w.selection]
 
-  disconnect_signal(c, c, 'unmanage', w.on_unmanage)
-
   for k, v in ipairs(w.players) do
     if v == c then
       table.remove(w.players, k)
@@ -307,7 +309,6 @@ function players.new()
 
   w.players = {}
   w.widget = utils.textbox()
-  w.on_unmanage = function (c) w:unmanage(c) end
 
   w.widget:buttons(awful.util.table.join(
   awful.button({}, 1, function () w:select_hide() end),
@@ -315,6 +316,9 @@ function players.new()
   awful.button({}, 4, function () w:select_cycle(-1) end),
   awful.button({}, 5, function () w:select_cycle( 1) end)
   ))
+
+  -- Remove from list on exit, and show/resume previous player (if applicable).
+  connect_signal(client, 'unmanage', function (c) w:unmanage(c) end)
 
   connect_signal(w.widget, w.widget, 'mouse::enter', function () w:select_start() end)
   connect_signal(w.widget, w.widget, 'mouse::leave', function () w:select_end() end)

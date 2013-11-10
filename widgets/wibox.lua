@@ -8,7 +8,8 @@ local wibox = {}
 
 if '3.4' == aw_ver then
 
-  wibox._set_widgets = function(w, left_widgets, right_widgets)
+  wibox._set_widgets = function(w, left_widgets, middle_widgets, right_widgets)
+
     local layout = { layout = awful.widget.layout.horizontal.leftright }
 
     if left_widgets then
@@ -28,8 +29,7 @@ if '3.4' == aw_ver then
     end
 
     if right_widgets then
-      local right = {}
-      right.layout = awful.widget.layout.horizontal.rightleft
+      local right = { layout = awful.widget.layout.horizontal.rightleft }
       for k, v in pairs(right_widgets) do
         if v then
           table.insert(right, v)

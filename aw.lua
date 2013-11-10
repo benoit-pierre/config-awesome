@@ -22,6 +22,16 @@ if '3.4' == aw_ver then
   function disconnect_signal(instance, ...)
     instance.remove_signal(...)
   end
+  function tag_screen(t)
+    return t.screen
+  end
+  function client_jumpto(c)
+    local t = c:tags()[1]
+    awful.screen.focus(tag_screen(t))
+    awful.tag.viewonly(t)
+    client.focus = c
+  end
+  client_iterate = awful.client.cycle
 end
 if '3.5' == aw_ver then
   function connect_signal(instance, ...)
@@ -30,6 +40,13 @@ if '3.5' == aw_ver then
   function disconnect_signal(instance, ...)
     instance.disconnect_signal(...)
   end
+  function tag_screen(t)
+    return awful.tag.getscreen(t)
+  end
+  function client_jumpto(c)
+    awful.client.jumpto(c)
+  end
+  client_iterate = awful.client.iterate
 end
 
 -- Directories
@@ -145,7 +162,7 @@ function state.save()
   s.players = players:state()
 
   -- Clients state.
-  for c in awful.client.iterate(function () return true end) do
+  for c in client_iterate(function () return true end) do
     local client_state = {}
     for k, v in ipairs(state.client_properties) do
       client_state[v] = awful.client.property.get(c, v)
@@ -532,7 +549,7 @@ for i = 1, keynumber do
       function ()
         local t = tags_by_num[i]
         local ms = mouse.screen
-        local ts = awful.tag.getscreen(t)
+        local ts = tag_screen(t)
         if ms ~= ts then
           screen_mouse_coords[ms] = mouse.coords()
           mouse.coords(screen_mouse_coords[ts])
@@ -553,7 +570,7 @@ for i = 1, keynumber do
           local mc
           local cs = c.screen
           local t = tags_by_num[i]
-          local ts = awful.tag.getscreen(t)
+          local ts = tag_screen(t)
           if ts ~= cs then
             mc = mouse.coords()
             awful.client.movetoscreen(c, ts)
@@ -835,7 +852,7 @@ connect_signal(client, 'manage', function (c, startup)
       end
 
       if state.state.focus == c.window then
-        awful.client.jumpto(c)
+        client_jumpto(c)
       end
 
       state_restored = true

@@ -87,7 +87,7 @@ if focus_debug then
       print(str .. client_tostring(v))
     end
     for tag_num, t in ipairs(tags_by_num) do
-      if scr == awful.tag.getscreen(t) and t.selected then
+      if scr == tag_screen(t) and t.selected then
         local tag_str = 'tag_focus_history ' .. tag_tostring(t) .. ' '
         for k, v in ipairs(tag_focus_history[tag_num]) do
           print(tag_str .. client_tostring(v))
@@ -126,7 +126,7 @@ local function focus_history_add(c)
   end
   global_focus_history_add(c)
   for tag_num, t in ipairs(tags_by_num) do
-    if c.screen == awful.tag.getscreen(t) and t.selected then
+    if c.screen == tag_screen(t) and t.selected then
       tag_focus_history_add(tag_num, c)
     end
   end
@@ -139,7 +139,7 @@ function focus_history_get(scr)
   for k, c in ipairs(global_focus_history) do
     if c.screen == scr and c:isvisible() then
       for tag_num, t in ipairs(tags_by_num) do
-        if awful.tag.getscreen(t) == scr and t.selected then
+        if tag_screen(t) == scr and t.selected then
           for k, v in ipairs(tag_focus_history[tag_num]) do
             if v == c then
               if 1 == k then
@@ -206,10 +206,20 @@ end
 connect_signal(client, 'focus', focus_history_add)
 connect_signal(client, 'unmanage', focus_history_del)
 
-connect_signal(tag, 'property::selected', focus_check)
+if '3.4' == aw_ver then
+  awful.tag.attached_add_signal(nil, 'property::selected', focus_check)
+  client.add_signal('new', function(c)
+    c:add_signal('untagged', focus_check)
+    c:add_signal('property::hidden', on_visibility_change)
+    c:add_signal('property::minimized', on_visibility_change)
+end)
+end
+if '3.5' == aw_ver then
+  connect_signal(tag, 'property::selected', focus_check)
+  connect_signal(client, 'untagged', focus_check)
+  connect_signal(client, 'property::hidden', on_visibility_change)
+  connect_signal(client, 'property::minimized', on_visibility_change)
+end
 connect_signal(client, 'unmanage', focus_check)
-connect_signal(client, 'untagged', focus_check)
-connect_signal(client, 'property::hidden', on_visibility_change)
-connect_signal(client, 'property::minimized', on_visibility_change)
 
 -- vim: foldmethod=marker foldlevel=0
