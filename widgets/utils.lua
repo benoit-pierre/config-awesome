@@ -60,15 +60,5 @@ if '3.5' == aw_ver then
 
 end
 
-local dummy = {}
-
-dummy.new = function(t)
-  local w = utils.textbox()
-  w:set_markup(' ')
-  return w
-end
-
-utils.dummy = utils.widget_class(dummy)
-
 return utils
 
