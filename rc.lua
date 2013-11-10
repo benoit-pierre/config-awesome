@@ -6,7 +6,7 @@ local naughty = require('naughty')
 
 local rc, err = loadfile(awful.util.getdir('config') .. '/aw.lua')
 if rc then
-  rc, err = pcall(rc)
+  rc, err = xpcall(rc, debug.traceback)
   if rc then
     return
   end

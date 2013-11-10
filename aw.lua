@@ -176,7 +176,7 @@ function state.restore()
   -- Read it.
   local rc, err = loadfile(state.filename)
   if rc then
-    rc, err = pcall(rc)
+    rc, err = xpcall(rc, debug.traceback)
   end
   if not rc then
     -- Rename state file for later inspection.
