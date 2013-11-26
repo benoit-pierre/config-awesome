@@ -134,8 +134,19 @@ function w.manage(w, c, startup_idx)
   end
 
   -- Show progress when entering window.
+  local mouse_over = false
   connect_signal(c, c, 'mouse::enter', function (c)
-    w:control(c, 'show-progress')
+    if not mouse_over then
+      mouse_over = c == mouse.object_under_pointer()
+      if mouse_over then
+        w:control(c, 'show-progress')
+      end
+    end
+  end)
+  connect_signal(c, c, 'mouse::leave', function (c)
+    if mouse_over then
+      mouse_over = c == mouse.object_under_pointer()
+    end
   end)
 
   -- Restore ontop property when leaving fullscreen.
