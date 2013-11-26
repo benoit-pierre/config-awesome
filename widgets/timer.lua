@@ -42,11 +42,6 @@ end
 
 function timer.new()
 
-  -- Start by checking notmuch is actually present and configured.
-  if not os.execute('notmuch config get database.path >/dev/null 2>&1') then
-    return nil
-  end
-
   local w = {
     widget = utils.textbox();
     timer = ctimer { timeout = 0.2 };
