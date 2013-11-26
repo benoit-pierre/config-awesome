@@ -25,18 +25,33 @@ local function reset(w)
 
   w.elapsed = 0
   w.start_time = os.time()
-  w.widget:set_markup(utils.widget_base('00:00:00'))
+  w:refresh()
 
 end
 
 local function refresh(w)
 
-  s = os.difftime(os.time(), w.start_time) + w.elapsed
-  m = math.floor(s / 60)
-  s = s - m * 60
-  h = math.floor(m / 60)
-  m = m - h * 60
-  w.widget:set_markup(utils.widget_base(string.format('%02u:%02u:%02u', h, m, s)))
+  local t
+
+  if not w.mouseover and not w.started and 0 == w.elapsed then
+    t = 'T'
+  else
+    local h, m, s
+
+    s = w.elapsed
+
+    if w.started then
+      s = s + os.difftime(os.time(), w.start_time)
+    end
+
+    m = math.floor(s / 60)
+    s = s - m * 60
+    h = math.floor(m / 60)
+    m = m - h * 60
+    t = string.format('%02u:%02u:%02u', h, m, s)
+  end
+
+  w.widget:set_markup(utils.widget_base(t))
 
 end
 
@@ -49,6 +64,7 @@ function timer.new()
     reset = reset;
     toggle = toggle;
     refresh = refresh;
+    mouseover = false;
   }
 
   w:reset()
@@ -57,6 +73,16 @@ function timer.new()
   awful.button({}, 1, function () w:toggle() end),
   awful.button({}, 3, function () w:reset() end)
   ))
+
+  local function on_mouseover(enter)
+
+    w.mouseover = enter
+    w:refresh()
+
+  end
+
+  connect_signal(w.widget, w.widget, 'mouse::enter', function () on_mouseover(true) end)
+  connect_signal(w.widget, w.widget, 'mouse::leave', function () on_mouseover(false) end)
 
   connect_signal(w.timer, w.timer, 'timeout', function () w:refresh() end)
 
