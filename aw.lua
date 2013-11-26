@@ -342,6 +342,9 @@ wibottom = {}
 -- Clock box
 clockbox = widgets.clock()
 
+-- Timer
+timerbox = widgets.timer()
+
 -- Layout box
 layoutbox = {}
 
@@ -399,6 +402,7 @@ for s = 1, screen.count() do
   {
     -- Left widgets
     clockbox,
+    timerbox,
     nmmailbox,
     promptbox[s],
   },
