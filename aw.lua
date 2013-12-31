@@ -806,7 +806,7 @@ require('autofocus')
 
 -- No 'started' signal, so use this crude hack...
 local starting = true
-local t = timer { timeout = 0.5 }
+local t = timer { timeout = 0.0 }
 connect_signal(t, t, 'timeout', function ()
   starting = false
   t:stop()
