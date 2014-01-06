@@ -160,6 +160,7 @@ function state.save()
   -- Global state.
   s.focus = client.focus and client.focus.window
   s.players = players:state()
+  s.mouse = mouse.coords()
 
   -- Clients state.
   for c in client_iterate(function () return true end) do
@@ -808,6 +809,9 @@ require('autofocus')
 local starting = true
 local t = timer { timeout = 0.0 }
 connect_signal(t, t, 'timeout', function ()
+  if state.state and state.state.mouse then
+    mouse.coords(state.state.mouse, true)
+  end
   starting = false
   t:stop()
   t = nil
