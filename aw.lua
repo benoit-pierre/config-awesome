@@ -348,6 +348,14 @@ function mainmenu_show()
   mainmenu:show({ keygrabber = true })
 end
 
+-- Power menu
+powermenu = awful.menu({
+  items = machinememenu
+})
+function powermenu_show()
+  powermenu:show({ keygrabber = true })
+end
+
 -- }}}
 
 -- {{{ And the wibox itself
@@ -489,6 +497,12 @@ awful.key(k_ms, 'q', awesome.quit),
 
 awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
 awful.key(k_n, 'XF86Eject', function () awful.util.spawn('eject -T') end),
+
+-- }}}
+
+-- {{{ Power management
+
+awful.key(k_n, 'XF86PowerOff', powermenu_show),
 
 -- }}}
 
