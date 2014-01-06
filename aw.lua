@@ -246,6 +246,16 @@ function logout()
   awesome.quit()
 end
 
+function hibernate()
+  lock()
+  awful.util.spawn('shutdown -S')
+end
+
+function suspend()
+  lock()
+  awful.util.spawn('shutdown -s')
+end
+
 function reboot()
   xsession_kill('USR1')
   logout()
@@ -318,6 +328,8 @@ sessionmemenu =
 -- Machine
 machinememenu =
 {
+  { 'hibernate', hibernate },
+  { 'suspend', suspend },
   { 'reboot', reboot },
   { 'halt', halt },
 }
