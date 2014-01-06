@@ -235,7 +235,7 @@ end
 
 function xsession_kill(signal)
   xsession_pid = os.getenv('XSESSION_PID')
-  os.execute('kill -'..signal..' '..xsession_pid)
+  awful.util.spawn('kill -'..signal..' '..xsession_pid)
 end
 
 function logout()
