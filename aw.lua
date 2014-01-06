@@ -60,7 +60,7 @@ beautiful.init(config_dir..'/theme.lua')
 editor = 'gvim -f'
 terminal = 'term'
 calculator = 'term -rc calc'
-screenlocker = 'xtrlock'
+screenlocker = 'xdg-screensaver lock'
 
 -- Modifiers
 modkey = 'Mod4'
@@ -238,6 +238,10 @@ function xsession_kill(signal)
   awful.util.spawn('kill -'..signal..' '..xsession_pid)
 end
 
+function lock()
+  awful.util.spawn(screenlocker)
+end
+
 function logout()
   awesome.quit()
 end
@@ -307,7 +311,7 @@ programsmenu =
 -- Session
 sessionmemenu =
 {
-  { 'lock', screenlocker },
+  { 'lock', lock },
   { 'logout', logout },
 }
 
