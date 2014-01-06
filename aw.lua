@@ -344,8 +344,8 @@ mainmenu = awful.menu({
     { 'awesome', awesomemenu },
   }
 })
-function mainmenu_toggle()
-  mainmenu:toggle({ keygrabber = true })
+function mainmenu_show()
+  mainmenu:show({ keygrabber = true })
 end
 
 -- }}}
@@ -470,8 +470,8 @@ awful.key(k_m, 'o', function () focus_by_idx(1) end),
 
 -- {{{ Menus
 
-awful.key(k_m, 'Menu', function () mainmenu_toggle() end),
-awful.key(k_m, 'm', function () mainmenu_toggle() end),
+awful.key(k_m, 'Menu', mainmenu_show),
+awful.key(k_m, 'm', mainmenu_show),
 
 -- }}}
 
