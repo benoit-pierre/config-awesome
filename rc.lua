@@ -12,7 +12,15 @@ if rc then
   end
 end
 
-naughty.notify { text = 'Awesome crashed during startup:\n\n' .. err .. '\n\nFalling back on recovery configuration.', timeout = 0 }
+print('Awesome crashed during startup:\n\n' .. err .. '\n\nFalling back on recovery configuration.')
+naughty.notify {
+  text = 'Awesome crashed during startup:\n\n' .. err .. '\n\nFalling back on recovery configuration.',
+  timeout = 0,
+  fg = '#cccccc',
+  bg = '#111111',
+  font = awesome.font,
+  border_color = '#333333',
+}
 
 dofile(awful.util.getdir('config') .. '/aw-recovery.lua')
 
