@@ -537,8 +537,10 @@ awful.key(k_m, 'f', function (c)
     awful.placement.no_offscreen(c)
   end
 end),
+awful.key(k_m, 'h', function (c) c.hidden = not c.hidden end),
 awful.key(k_m, 's', function (c) c.sticky = not c.sticky end),
 awful.key(k_m, 't', function (c) c.ontop = not c.ontop end),
+awful.key(k_m, 'z', function (c) c.minimized = true end),
 nil
 )
 
