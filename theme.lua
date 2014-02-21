@@ -12,7 +12,7 @@ theme.fg_normal     = '#cccccc'
 theme.fg_focus      = '#cccccc'
 theme.fg_urgent     = '#cc7766'
 
-theme.border_width  = '1'
+theme.border_width  = 1
 theme.border_normal = '#333333'
 theme.border_focus  = '#6a6a6a'
 
@@ -24,9 +24,7 @@ theme.battery_low   = '#ff4444'
 
 theme.text_hilight  = '#cc7766'
 
-theme.wibox_height  = '22'
-
-theme.wallpaper_cmd = { 'xsetroot -solid black' }
+theme.wibox_height  = 22
 
 -- Display the taglist squares
 theme.taglist_squares_sel   = icons_dir..'/taglist/square_sel.png'
