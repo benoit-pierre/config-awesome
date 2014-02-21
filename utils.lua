@@ -24,6 +24,18 @@ function utils.client_tostring(c)
   if c.ontop then
     str = str .. 't'
   end
+  if c.above then
+    str = str .. 'a'
+  end
+  if c.below then
+    str = str .. 'b'
+  end
+  if c.minimized then
+    str = str .. 'm'
+  end
+  if c.maximized_horizontal and c.maximized_vertical then
+    str = str .. 'M'
+  end
   if client.focus == c then
     str = str .. '*'
   end
