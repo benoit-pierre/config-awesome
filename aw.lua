@@ -159,6 +159,68 @@ end
 
 -- }}}
 
+-- {{{ Client move/resize handling.
+
+function client_move_resize(c, x, y, d)
+  local g = c:geometry()
+  local s = screen[c.screen]
+  local sw
+  local sh
+  local w
+  local h
+
+  -- Translation.
+  x = math.floor(s.geometry.width * x / 100 + 0.5)
+  y = math.floor(s.geometry.height * y / 100 + 0.5)
+
+  -- Remove top wibox from equation, force inside screen.
+  -- g.x = g.x - c.border_width
+  if g.x < 0 then
+    x = x - g.x
+    g.x = 0
+  end
+  -- g.y = g.y - c.border_width - beautiful.wibox_height
+  g.y = g.y - beautiful.wibox_height
+  if g.y < 0 then
+    y = y - g.y
+    g.y = 0
+  end
+
+  -- Usable screen width/height.
+  sw = s.geometry.width - 2 * c.border_width
+  sh = s.geometry.height - 2 * c.border_width - 2 * beautiful.wibox_height
+
+  -- New width/height.
+  w = g.width + math.floor(g.width * d / 100 + 0.5)
+  h = math.floor(w * g.height / g.width + 0.5)
+
+  if w < g.width and (g.x + g.width) >= (sw - 10) then
+    x = x + g.width - w
+  end
+
+  if h < g.height and (g.y + g.height) >= (sh - 10) then
+    y = y + g.height - h
+  end
+
+  if (g.x + x) < 0 then
+    x = -g.x
+  end
+  if (g.x + w + x) > sw then
+    x = sw - w - g.x
+  end
+
+  if (g.y + y) < 0 then
+    y = -g.y
+  end
+  if (g.y + h + y) > sh then
+    y = sh - h - g.y
+  end
+
+  awful.client.moveresize(x, y, w - g.width, h - g.height, c)
+end
+
+-- }}}
+
 -- }}}
 
 -- {{{ State handling.
@@ -576,6 +638,12 @@ awful.key(k_m, 'h', function (c) c.hidden = not c.hidden end),
 awful.key(k_m, 's', function (c) c.sticky = not c.sticky end),
 awful.key(k_m, 't', function (c) c.ontop = not c.ontop end),
 awful.key(k_m, 'z', function (c) c.minimized = true end),
+awful.key(k_ms, 'n',         function (c) client_move_resize(c, -5,  0,   0) end),
+awful.key(k_ms, 'e',         function (c) client_move_resize(c,  0,  5,   0) end),
+awful.key(k_ms, 'u',         function (c) client_move_resize(c,  0, -5,   0) end),
+awful.key(k_ms, 'i',         function (c) client_move_resize(c,  5,  0,   0) end),
+awful.key(k_ms, 'semicolon', function (c) client_move_resize(c,  0,  0,  10) end),
+awful.key(k_ms, 'o',         function (c) client_move_resize(c,  0,  0, -10) end),
 nil
 )
 
