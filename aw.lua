@@ -4,9 +4,10 @@ local beautiful = require('beautiful')
 local naughty = require('naughty')
 local utils = require('utils')
 
--- {{{ Global variable definitions
+-- {{{ Global variable definitions.
 
--- Awesome version
+-- {{{ Version dependent code.
+
 aw_ver = '???'
 if awesome.version:match('v3[.]4[.]?') then
   aw_ver = '3.4'
@@ -33,6 +34,7 @@ if '3.4' == aw_ver then
   end
   client_iterate = awful.client.cycle
 end
+
 if '3.5' == aw_ver then
   function connect_signal(instance, ...)
     instance.connect_signal(...)
@@ -49,20 +51,22 @@ if '3.5' == aw_ver then
   client_iterate = awful.client.iterate
 end
 
--- Directories
+-- }}}
+
+-- Directories.
 config_dir = awful.util.getdir('config')
 icons_dir = config_dir..'/icons'
 
--- Themes define colours, icons, and wallpapers
+-- Themes define colours, icons, and wallpapers.
 beautiful.init(config_dir..'/theme.lua')
 
--- Programs
+-- Programs.
 editor = 'gvim -f'
 terminal = 'term'
 calculator = 'term -rc calc'
 screenlocker = 'xdg-screensaver lock'
 
--- Modifiers
+-- Modifiers.
 modkey = 'Mod4'
 k_n    = {}
 k_m    = { modkey }
@@ -70,7 +74,7 @@ k_ms   = { modkey, 'Shift' }
 k_mc   = { modkey, 'Control' }
 k_mcs  = { modkey, 'Control', 'Shift' }
 
--- Icons
+-- Icons.
 awesome_icon = icons_dir..'/awesome.png'
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
@@ -90,11 +94,22 @@ layouts =
     awful.layout.suit.magnifier
 }
 
+-- Track mouse coordinates for each screen.
+screen_mouse_coords = {}
+for s = 1, screen.count() do
+  local g = screen[s].geometry
+  local x = g.x + g.width / 2
+  local y = g.y + g.height / 2
+  screen_mouse_coords[s] = { x = x; y = y }
+end
+
 -- }}}
 
--- {{{ Functions for client focus.
+-- {{{ Utility functions.
 
--- Focus next/previous
+-- {{{ Client focus.
+
+-- Focus next/previous.
 function focus_by_idx(step)
   awful.client.focus.byidx(step)
   if client.focus then
@@ -104,7 +119,7 @@ end
 function focus_next() focus_by_idx(1) end
 function focus_previous() focus_by_idx(-1) end
 
--- Focus next/previous visible client
+-- Focus next/previous visible client.
 function focus_visible_by_idx(step)
   local fc = client.focus
   local nc = fc
@@ -124,7 +139,29 @@ function focus_visible_previous() focus_visible_by_idx(-1) end
 
 -- }}}
 
--- State handling {{{
+-- {{{ Client (automatic) bottom left placement.
+
+function place_bottom_left(c)
+  local g = c:geometry()
+  local s = screen[c.screen]
+  local y = (s.geometry.height - (g.height + beautiful.wibox_height))
+  if awful.client.property.get(c, 'old_width') ~= g.width and y ~= g.y then
+    awful.client.property.set(c, 'old_width', g.width)
+    g.y = y
+    c:geometry(g)
+  end
+end
+
+function setup_autoplace_bottom_left(c)
+  place_bottom_left(c)
+  connect_signal(c, c, 'property::height', place_bottom_left)
+end
+
+-- }}}
+
+-- }}}
+
+-- {{{ State handling.
 
 local state = {}
 
@@ -152,6 +189,8 @@ state.client_properties = {
 }
 
 state.state = nil
+
+-- {{{ Saving.
 
 function state.save()
 
@@ -184,6 +223,10 @@ function state.save()
 
 end
 
+--- }}}
+
+--- {{{ Restoring.
+
 function state.restore()
 
   -- Do we have a state file?
@@ -215,6 +258,8 @@ end
 
 state.restore()
 
+--- }}}
+
 -- Will check configuration is still valid before restarting.
 function awesome_restart()
   local rc, err = loadfile(awful.util.getdir('config') .. '/aw.lua')
@@ -231,7 +276,7 @@ end
 
 -- }}}
 
--- Session handling {{{
+-- {{{ Session handling.
 
 function xsession_kill(signal)
   xsession_pid = os.getenv('XSESSION_PID')
@@ -268,10 +313,7 @@ end
 
 -- }}}
 
--- Must be sourced after global functions/variables definitions.
-local widgets = require('widgets')
-
--- {{{ Tags
+-- {{{ Tags.
 
 -- Define a tag table which hold all screen tags.
 local ns = screen.count()
@@ -293,17 +335,9 @@ end
 
 -- }}}
 
-screen_mouse_coords = {}
-for s = 1, screen.count() do
-  local g = screen[s].geometry
-  local x = g.x + g.width / 2
-  local y = g.y + g.height / 2
-  screen_mouse_coords[s] = { x = x; y = y }
-end
+-- {{{ Menu.
 
--- {{{ Menu
-
--- Awesome
+-- Awesome.
 awesomemenu =
 {
    { 'edit config', editor..' '..config_dir..'/aw.lua' },
@@ -311,21 +345,21 @@ awesomemenu =
    { 'quit', awesome.quit },
 }
 
--- Programs
+-- Programs.
 programsmenu =
 {
     { 'editor', editor },
     { 'terminal', terminal },
 }
 
--- Session
+-- Session.
 sessionmemenu =
 {
   { 'lock', lock },
   { 'logout', logout },
 }
 
--- Machine
+-- Machine.
 machinememenu =
 {
   { 'hibernate', hibernate },
@@ -334,7 +368,7 @@ machinememenu =
   { 'halt', halt },
 }
 
--- Main menu
+-- Main menu.
 mainmenu = awful.menu({
   items =
   {
@@ -348,7 +382,7 @@ function mainmenu_show()
   mainmenu:show({ keygrabber = true })
 end
 
--- Power menu
+-- Power menu.
 powermenu = awful.menu({
   items = machinememenu
 })
@@ -358,19 +392,22 @@ end
 
 -- }}}
 
--- {{{ And the wibox itself
+-- {{{ Wiboxes.
 
--- Create a wibox for each screen and add it
+-- Must be sourced after global functions/variables definitions.
+local widgets = require('widgets')
+
+-- Create a wibox for each screen and add it.
 witop = {}
 wibottom = {}
 
--- Clock box
+-- Clock.
 clockbox = widgets.clock()
 
--- Timer
+-- Timer.
 timerbox = widgets.timer()
 
--- Layout box
+-- Layouts.
 layoutbox = {}
 
 -- Media players handling.
@@ -379,63 +416,63 @@ function players_callback(c, startup_idx)
   players:manage(c, startup_idx)
 end
 
--- Menu launcher
+-- Menu launcher.
 menulauncher = awful.widget.launcher({ image = awesome_icon, menu = mainmenu })
 
--- Notmuch mail status
+-- Notmuch mail status.
 nmmailbox = widgets.notmuch()
 
--- Prompt box
+-- Prompt.
 promptbox = {}
 
--- Systray
+-- Systray.
 systray = widgets.systray()
 
--- Taglist
+-- Taglist.
 taglist = {}
 
--- Tasklist
+-- Tasklist.
 tasklist = {}
 
 for s = 1, screen.count() do
 
-  -- Per screen widgets
+  -- Per screen widgets.
   layoutbox[s] = widgets.layoutbox(s)
   promptbox[s] = awful.widget.prompt()
   taglist[s] = widgets.taglist(s)
   tasklist[s] = widgets.tasklist(s)
 
-  -- Create wiboxes
+  -- Create wiboxes.
 
   witop[s] = widgets.wibox('top', s,
   {
-    -- Left widgets
+    -- Left widgets.
     menulauncher,
     taglist[s],
     layoutbox[s],
   },
   {
-    -- Middle widgets
+    -- Middle widgets.
     tasklist[s],
   },
   {
-    -- Right widgets
+    -- Right widgets.
     players.widget,
   })
 
   wibottom[s] = widgets.wibox('bottom', s,
   {
-    -- Left widgets
+    -- Left widgets.
     clockbox,
     timerbox,
     nmmailbox,
     promptbox[s],
   },
   {
-    -- Middle widgets
+    -- Middle widgets.
   },
   {
-    -- Right widgets
+    -- Right widgets.
     s == 1 and systray or nil,
   })
 
@@ -443,13 +480,11 @@ end
 
 -- }}}
 
--- }}}
-
--- {{{ Key bindings
+-- {{{ Key bindings.
 
 globalkeys = awful.util.table.join(
 
--- {{{ Client manipulation, global part
+-- {{{ Client manipulation, global part.
 
 awful.key(k_m, 'Down',
 function ()
@@ -476,20 +511,20 @@ awful.key(k_m, 'o', function () focus_by_idx(1) end),
 
 -- }}}
 
--- {{{ Menus
+-- {{{ Menus.
 
 awful.key(k_m, 'Menu', mainmenu_show),
 awful.key(k_m, 'm', mainmenu_show),
 
 -- }}}
 
--- {{{ Media players
+-- {{{ Media players.
 
 awful.key(k_m, 'grave', function () players:toggle() end),
 
 -- }}}
 
--- {{{ Programs
+-- {{{ Programs.
 
 awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
 awful.key(k_mc, 'r', awesome_restart),
@@ -500,19 +535,19 @@ awful.key(k_n, 'XF86Eject', function () awful.util.spawn('eject -T') end),
 
 -- }}}
 
--- {{{ Power management
+-- {{{ Power management.
 
 awful.key(k_n, 'XF86PowerOff', powermenu_show),
 
 -- }}}
 
--- {{{ Prompts
+-- {{{ Prompts.
 
 awful.key(k_m, 'r', function () promptbox[mouse.screen]:run() end),
 
 -- }}}
 
--- {{{ Xkb layout
+-- {{{ Keymap layout.
 
 awful.key(k_m, 'F10', function () awful.util.spawn('setxkbd') end),
 awful.key(k_m, 'F11', function () awful.util.spawn('setxkbmap us') end),
@@ -526,7 +561,7 @@ nil
 
 )
 
--- {{{ Client manipulation, client part
+-- {{{ Client manipulation, client part.
 
 clientkeys = awful.util.table.join(
 awful.key(k_m, 'c', function (c) c:kill() end),
@@ -546,30 +581,10 @@ nil
 
 -- }}}
 
--- {{{ Client (automatic) bottom left placement
+-- {{{ Assign keys for each tag.
 
-function place_bottom_left(c)
-  local g = c:geometry()
-  local s = screen[c.screen]
-  local y = (s.geometry.height - (g.height + beautiful.wibox_height))
-  if awful.client.property.get(c, 'old_width') ~= g.width and y ~= g.y then
-    awful.client.property.set(c, 'old_width', g.width)
-    g.y = y
-    c:geometry(g)
-  end
-end
-
-function setup_autoplace_bottom_left(c)
-  place_bottom_left(c)
-  connect_signal(c, c, 'property::height', place_bottom_left)
-end
-
--- }}}
-
--- {{{ Assign keys for each tag
-
--- Bind keyboard digits
--- Compute the maximum number of digit we need, limited to 12
+-- Bind keyboard digits.
+-- Compute the maximum number of digit we need, limited to 12.
 local keynumber = #tags_by_num
 
 for i = 1, keynumber do
@@ -628,19 +643,22 @@ end
 
 -- }}}
 
--- Client buttons
+-- {{{ Client manipulation, mouse bindings.
+
 clientbuttons = awful.util.table.join(
 awful.button(k_n, 1, function (c) client.focus = c end),
 awful.button(k_m, 1, awful.mouse.client.move),
 awful.button(k_m, 3, awful.mouse.client.resize)
 )
 
--- Set keys
+-- }}}
+
+-- Set keys.
 root.keys(globalkeys)
 
 -- }}}
 
--- {{{ Rules
+-- {{{ Rules.
 
 awful.rules = require('awful.rules')
 
@@ -694,7 +712,7 @@ awful.rules.rules =
       floating = true,
     },
   },
-  -- {{{ Media players
+  -- {{{ Media players.
   {
     rule = { class = 'mpv' },
     properties = players.properties,
@@ -721,7 +739,7 @@ awful.rules.rules =
     callback = players_callback,
   },
   -- }}}
-  -- {{{ Browsers
+  -- {{{ Browsers.
   {
     rule = { class = 'Firefox' },
     properties =
@@ -736,7 +754,7 @@ awful.rules.rules =
       tag = tags_by_num[2],
     },
   },
-  -- Fix for fullscreen flash videos
+  -- Fix for fullscreen flash videos.
   {
     rule = { class = 'Plugin-container' },
     properties =
@@ -745,7 +763,7 @@ awful.rules.rules =
     },
   },
   -- }}}
-  -- {{{ Games
+  -- {{{ Games.
   {
     rule = { class = 'Steam' },
     properties =
@@ -779,7 +797,7 @@ awful.rules.rules =
       tag = tags_by_num[8],
     },
   },
-  -- {{{ X utilities
+  -- {{{ X utilities.
   {
     rule = { name = 'Event Tester' },
     properties =
@@ -835,7 +853,7 @@ require('autofocus')
 
 --- }}}
 
--- {{{ Signals
+-- {{{ Signals.
 
 -- No 'started' signal, so use this crude hack...
 local starting = true
@@ -855,7 +873,7 @@ disconnect_signal(client, 'manage', awful.rules.apply)
 -- Signal function to execute when a new client appears.
 connect_signal(client, 'manage', function (c, startup)
 
-  -- Enable sloppy focus
+  -- Enable sloppy focus.
   connect_signal(c, c, 'mouse::enter', function(c)
     if not starting
       and awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
