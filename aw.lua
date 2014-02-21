@@ -159,6 +159,45 @@ end
 
 -- }}}
 
+-- {{{ Client keymap handling.
+
+local default_keymap = 'colemak'
+local alternate_keymap = 'us'
+local current_keymap = default_keymap
+
+function client_apply_keymap(c)
+  local keymap = awful.client.property.get(c, 'keymap')
+  if not keymap then
+    keymap = default_keymap
+  end
+  if keymap == current_keymap then
+    return
+  end
+  local cmd = 'setxkbd'
+  if keymap ~= default_keymap then
+    cmd = cmd..' '..keymap
+  end
+  os.execute(cmd)
+  current_keymap = keymap
+  client.emit_signal('keymap', keymap)
+end
+
+function client_toggle_keymap(c)
+  local keymap = awful.client.property.get(c, 'keymap')
+  if keymap and keymap ~= default_keymap then
+    keymap = default_keymap
+  else
+    keymap = alternate_keymap
+  end
+  awful.client.property.set(c, 'keymap', keymap)
+  client_apply_keymap(c)
+end
+
+client.add_signal('keymap')
+connect_signal(client, 'focus', client_apply_keymap)
+
+-- }}}
+
 -- {{{ Client move/resize handling.
 
 function client_move_resize(c, x, y, d)
@@ -466,6 +505,14 @@ wibottom = {}
 -- Clock.
 clockbox = widgets.clock()
 
+-- Keymap.
+keymapbox = widgets.utils.textbox()
+keymapbox.update = function (self)
+  self:set_markup(widgets.utils.widget_base(current_keymap))
+end
+keymapbox:update()
+connect_signal(client, 'keymap', function () keymapbox:update() end)
+
 -- Timer.
 timerbox = widgets.timer()
 
@@ -528,6 +575,7 @@ for s = 1, screen.count() do
     clockbox,
     timerbox,
     nmmailbox,
+    keymapbox,
     promptbox[s],
   },
   {
@@ -609,14 +657,6 @@ awful.key(k_m, 'r', function () promptbox[mouse.screen]:run() end),
 
 -- }}}
 
--- {{{ Keymap layout.
-
-awful.key(k_m, 'F10', function () awful.util.spawn('setxkbd') end),
-awful.key(k_m, 'F11', function () awful.util.spawn('setxkbmap us') end),
-awful.key(k_m, 'F12', function () awful.util.spawn('setxkbmap fr') end),
-
--- }}}
-
 awful.key(k_ms, 'l', function () awful.layout.inc(layouts, 1) end),
 
 nil
@@ -638,6 +678,7 @@ awful.key(k_m, 'h', function (c) c.hidden = not c.hidden end),
 awful.key(k_m, 's', function (c) c.sticky = not c.sticky end),
 awful.key(k_m, 't', function (c) c.ontop = not c.ontop end),
 awful.key(k_m, 'z', function (c) c.minimized = true end),
+awful.key(k_m, 'k', client_toggle_keymap),
 awful.key(k_ms, 'n',         function (c) client_move_resize(c, -5,  0,   0) end),
 awful.key(k_ms, 'e',         function (c) client_move_resize(c,  0,  5,   0) end),
 awful.key(k_ms, 'u',         function (c) client_move_resize(c,  0, -5,   0) end),
