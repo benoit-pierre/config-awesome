@@ -193,7 +193,9 @@ function client_toggle_keymap(c)
   client_apply_keymap(c)
 end
 
-client.add_signal('keymap')
+if '3.5' == aw_ver then
+  client.add_signal('keymap')
+end
 connect_signal(client, 'focus', client_apply_keymap)
 
 -- }}}
