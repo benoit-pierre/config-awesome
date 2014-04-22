@@ -3,6 +3,7 @@ local awful = require('awful')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
 local utils = require('utils')
+local keepassx = require('keepassx')
 
 -- {{{ Global variable definitions.
 
@@ -645,6 +646,8 @@ awful.key(k_ms, 'q', awesome.quit),
 awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
 awful.key(k_n, 'XF86Eject', function () awful.util.spawn('eject -T') end),
 
+awful.key(k_m, 'k', keepassx.run_or_raise),
+
 -- }}}
 
 -- {{{ Power management.
@@ -791,6 +794,7 @@ awful.rules.rules =
       floating = true,
     },
   },
+  keepassx.rules,
   {
     rule = { class = 'Amphetype.py' },
     properties =
