@@ -791,6 +791,7 @@ awful.rules.rules =
     properties =
     {
       focus = true,
+      raise = true,
       size_hints_honor = false,
     }
   },
