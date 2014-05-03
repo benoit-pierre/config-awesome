@@ -437,6 +437,9 @@ for s = 1, screen.count() do
   wn = wn + nw
 end
 
+-- Use floating layout for 5th tag.
+awful.layout.set(awful.layout.suit.floating, tags_by_num[5])
+
 -- }}}
 
 -- {{{ Menu.
