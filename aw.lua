@@ -649,7 +649,7 @@ awful.key(k_ms, 'q', awesome.quit),
 awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
 awful.key(k_n, 'XF86Eject', function () awful.util.spawn('eject -T') end),
 
-awful.key(k_m, 'k', keepassx.run_or_raise),
+awful.key(k_m, 'k', keepassx.toggle),
 
 -- }}}
 

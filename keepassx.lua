@@ -12,24 +12,28 @@ function dbg(text)
   }
 end
 
-keepassx.run_or_raise = function ()
+keepassx.toggle = function ()
 
   local matcher = function (c)
     return awful.rules.match(c, { class = 'Keepassx' } )
   end
 
   for c in awful.client.iterate(matcher) do
-    if client.focus then
-      local s = client.focus.screen
-      local t = awful.tag.selected(s)
-      c:tags({ t })
+    if client.focus == c then
+      -- Keepassx is the current focused client, hide it.
+      c.hidden = true
+      return
     end
+    -- Move the window on the current tag and focus it.
+    local s = mouse.screen
+    local t = awful.tag.selected(s)
+    c:tags({ t })
     c.hidden = false
-    c.minimized = false
     awful.client.jumpto(c, false)
     return
   end
 
+  -- No Keepassx window found, start it.
   awful.util.spawn('keepassx')
 
 end
@@ -42,8 +46,6 @@ keepassx.callback = function (c)
     end
   end)
 
-  awful.client.jumpto(c)
-
 end
 
 keepassx.rules =   {
@@ -52,7 +54,6 @@ keepassx.rules =   {
   properties =
   {
     floating = true,
-    sticky = true,
   },
 }
 
