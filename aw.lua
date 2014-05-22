@@ -302,7 +302,6 @@ function state.save()
 
   -- Global state.
   s.focus = client.focus and client.focus.window
-  s.players = players:state()
   s.mouse = mouse.coords()
 
   -- Clients state.
@@ -1010,49 +1009,36 @@ connect_signal(client, 'manage', function (c, startup)
   c:buttons(clientbuttons)
   c:keys(clientkeys)
 
-  local state_restored = false
-
-  if startup then
-
-    -- Try to restore state.
-    local client_state = state.state and state.state[c.window]
-
-    if client_state then
-
-      for k, v in ipairs(state.client_properties) do
-        awful.client.property.set(c, v, client_state[v])
-      end
-      for k, v in ipairs(state.client_fields) do
-        c[v] = client_state[v]
-      end
-      c:geometry(client_state.geometry)
-
-      local startup_idx = state.state.players[c.window]
-      if startup_idx then
-        players_callback(c, startup_idx)
-      end
-
-      if state.state.focus == c.window then
-        client_jumpto(c)
-      end
-
-      state_restored = true
-
-    end
-
+  -- Put windows in a smart way, only if they does not set an initial position.
+  if not c.size_hints.user_position and not c.size_hints.program_position then
+    awful.placement.no_overlap(c)
+    awful.placement.no_offscreen(c)
   end
 
-  if not state_restored then
+  -- Apply rules.
+  awful.rules.apply(c)
 
-    -- Put windows in a smart way, only if they does not set an initial position.
-    if not c.size_hints.user_position and not c.size_hints.program_position then
-      awful.placement.no_overlap(c)
-      awful.placement.no_offscreen(c)
-    end
+  if not startup then
+    return
+  end
 
-    -- Apply rules.
-    awful.rules.apply(c)
+  -- Try to restore state.
+  local client_state = state.state and state.state[c.window]
 
+  if not client_state then
+    return
+  end
+
+  for k, v in ipairs(state.client_properties) do
+    awful.client.property.set(c, v, client_state[v])
+  end
+  for k, v in ipairs(state.client_fields) do
+    c[v] = client_state[v]
+  end
+  c:geometry(client_state.geometry)
+
+  if state.state.focus == c.window then
+    client_jumpto(c)
   end
 
 end)

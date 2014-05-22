@@ -302,18 +302,6 @@ function w.select_end(w)
 
 end
 
-function w.state(w)
-
-  local state = {}
-
-  for k, v in ipairs(w.players) do
-    state[v.window] = k
-  end
-
-  return state
-
-end
-
 function players.new()
 
   local w = awful.util.table.clone(w)
