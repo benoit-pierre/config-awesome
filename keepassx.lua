@@ -18,7 +18,7 @@ keepassx.toggle = function ()
     return awful.rules.match(c, { class = 'Keepassx' } )
   end
 
-  for c in awful.client.iterate(matcher) do
+  for c in client_iterate(matcher) do
     if client.focus == c then
       -- Keepassx is the current focused client, hide it.
       c.hidden = true
@@ -29,7 +29,7 @@ keepassx.toggle = function ()
     local t = awful.tag.selected(s)
     c:tags({ t })
     c.hidden = false
-    awful.client.jumpto(c, false)
+    client_jumpto(c, false)
     return
   end
 
