@@ -1,8 +1,9 @@
 -- {{{ Media players handling.
 
-local utils = require('widgets.utils')
+local wutils = require('widgets.utils')
 local beautiful = require('beautiful')
 local awful = require('awful')
+local utils = require('utils')
 
 local timeout = 1
 local players = {}
@@ -171,6 +172,10 @@ function w.manage(w, c, startup_idx)
     end
   end)
 
+  connect_signal(c, c, 'property::width', function (c)
+    w:place(c)
+  end)
+
   w:refresh()
 
 end
@@ -180,12 +185,13 @@ function w.refresh(w)
   local text
 
   if w.selection then
-    text = tostring(w.selection)..' - '..w.players[w.selection].name
+    name = awful.util.escape(w.players[w.selection].name)
+    text = tostring(w.selection)..' - '..name
   else
     text = tostring(#w.players)
   end
 
-  w.widget:set_markup(utils.widget_base(text))
+  w.widget:set_markup(wutils.widget_base(text))
 
 end
 
@@ -307,7 +313,7 @@ function players.new()
   local w = awful.util.table.clone(w)
 
   w.players = {}
-  w.widget = utils.textbox()
+  w.widget = wutils.textbox()
 
   w.widget:buttons(awful.util.table.join(
   awful.button({}, 1, function () w:select_hide() end),
@@ -328,6 +334,6 @@ function players.new()
 
 end
 
-return utils.widget_class(players)
+return wutils.widget_class(players)
 
 -- }}}
