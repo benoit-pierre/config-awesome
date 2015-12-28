@@ -27,11 +27,21 @@ if '3.4' == aw_ver then
   function tag_screen(t)
     return t.screen
   end
-  function client_jumpto(c)
+  function client_jumpto(c, merge)
+    local s = client.focus and client.focus.screen or mouse.screen
+    if s ~= c.screen then
+      mouse.screen = c.screen
+    end
     local t = c:tags()[1]
-    awful.screen.focus(tag_screen(t))
-    awful.tag.viewonly(t)
+    if t and not c:isvisible() then
+        if merge then
+            t.selected = true
+        else
+            awful.tag.viewonly(t)
+        end
+    end
     client.focus = c
+    c:raise()
   end
   client_iterate = awful.client.cycle
 end
@@ -46,8 +56,8 @@ if '3.5' == aw_ver then
   function tag_screen(t)
     return awful.tag.getscreen(t)
   end
-  function client_jumpto(c)
-    awful.client.jumpto(c)
+  function client_jumpto(c, merge)
+    awful.client.jumpto(c, merge)
   end
   client_iterate = awful.client.iterate
 end
