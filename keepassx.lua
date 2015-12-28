@@ -15,7 +15,7 @@ end
 keepassx.toggle = function ()
 
   local matcher = function (c)
-    return awful.rules.match(c, { class = 'Keepassx' } )
+    return awful.rules.match(c, keepassx.rules.rule)
   end
 
   for c in client_iterate(matcher) do
@@ -49,7 +49,7 @@ keepassx.callback = function (c)
 end
 
 keepassx.rules =   {
-  rule = { class = 'Keepassx' },
+  rule = { class = '[Kk]eepassx' },
   callback = keepassx.callback,
   properties =
   {
