@@ -55,7 +55,7 @@ end
 
 -- Convert a tag to a human readable string.
 function utils.tag_tostring(t)
-  local str = awful.tag.getscreen(t) .. '.' .. t.name
+  local str = tag_screen(t) .. '.' .. t.name
   if t.selected then
     str = str .. '*'
   end
