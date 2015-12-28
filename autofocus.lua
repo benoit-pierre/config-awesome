@@ -73,10 +73,12 @@ if focus_debug then
     print(...)
   end
 
-  focus_print = function ()
-    local str = 'focus '
+  focus_print = function (header)
+    local str = header .. ' focus '
     if client.focus then
       str = str .. client_tostring(client.focus)
+    else
+      str = str .. 'nil'
     end
     print(str)
   end
@@ -172,15 +174,16 @@ local function focus_check_fullscreen(c)
   if not c then
     return false
   end
-  focus_msg('focus_check_fullscreen', c.name, c.fullscreen, c:isvisible())
-  return c.screen == mouse.screen and c.fullscreen and c:isvisible()
+  local ret = c.screen == mouse.screen and c.fullscreen and c:isvisible()
+  focus_msg('focus_check_fullscreen', c.name, c.fullscreen, c:isvisible(), '=', ret)
+  return ret
 end
 
 local function focus_check()
   local c = client.focus
   local ms = mouse.screen
   focus_msg('focus_check ' .. ms)
-  focus_print()
+  focus_print('current')
   -- Keep focus on fullscreen client.
   if focus_check_fullscreen(c) then
     return
@@ -189,12 +192,12 @@ local function focus_check()
   c = focus_history_get(ms)
   if c and c ~= client.focus then
     client.focus = c
-    focus_print()
+    focus_print('new')
   end
 end
 
 local function on_visibility_change(c)
-  focus_msg('focus_check', c)
+  focus_msg('on_visibility_change', c.name)
   -- Re-focus fullscreen client when it become visible again.
   if focus_check_fullscreen(c) then
     client.focus = c
