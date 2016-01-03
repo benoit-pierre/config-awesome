@@ -184,7 +184,7 @@ function client_apply_keymap(c)
   if keymap == current_keymap then
     return
   end
-  local cmd = 'setxkbd'
+  local cmd = 'setxinput -k'
   if keymap ~= default_keymap then
     cmd = cmd..' '..keymap
   end

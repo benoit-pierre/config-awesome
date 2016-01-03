@@ -25,7 +25,8 @@ function w.control(w, c, cmd)
   if not c then
     return
   end
-  awful.util.spawn('mp-control '..c.pid..' '..cmd)
+  cmd = string.format('mp-control %u %s', c.pid, cmd)
+  awful.util.spawn(cmd)
 end
 
 function w.toggle(w, c)
