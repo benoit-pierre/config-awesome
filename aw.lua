@@ -632,6 +632,7 @@ awful.key(k_m, 'e', function () awful.client.focus.bydirection('down') end),
 awful.key(k_m, 'u', function () awful.client.focus.bydirection('up') end),
 awful.key(k_m, 'i', function () awful.client.focus.bydirection('right') end),
 awful.key(k_m, 'semicolon', function () focus_by_idx(-1) end),
+awful.key(k_m, 'colon', function () focus_by_idx(-1) end),
 awful.key(k_m, 'o', function () focus_by_idx(1) end),
 
 -- }}}
@@ -705,6 +706,7 @@ awful.key(k_ms, 'e',         function (c) client_move_resize(c,  0,  5,   0) end
 awful.key(k_ms, 'u',         function (c) client_move_resize(c,  0, -5,   0) end),
 awful.key(k_ms, 'i',         function (c) client_move_resize(c,  5,  0,   0) end),
 awful.key(k_ms, 'semicolon', function (c) client_move_resize(c,  0,  0,  10) end),
+awful.key(k_ms, 'colon',     function (c) client_move_resize(c,  0,  0,  10) end),
 awful.key(k_ms, 'o',         function (c) client_move_resize(c,  0,  0, -10) end),
 nil
 )
@@ -717,15 +719,25 @@ nil
 -- Compute the maximum number of digit we need, limited to 12.
 local keynumber = #tags_by_num
 
+local digits_alternate_keys = {
+  'exclam',
+  'at',
+  'numbersign',
+  'dollar',
+  'percent',
+  'asciicircum',
+  'ampersand',
+  'asterisk',
+  'parenleft',
+}
+digits_alternate_keys[0] = 'parenright'
+
 for i = 1, keynumber do
-  local k
-  if i == 11 then
-    k = "minus"
-  elseif i == 12 then
-    k = "equal"
-  else
-    k = i % 10 -- 10 become 0
-  end
+  local keys = {
+    i % 10, -- 10 become 0
+    digits_alternate_keys[i % 10],
+  }
+  for n, k in pairs(keys) do
   globalkeys = awful.util.table.join(globalkeys,
     awful.key(k_m, k,
       function ()
@@ -769,6 +781,7 @@ for i = 1, keynumber do
           awful.client.toggletag(tags_by_num[i])
         end
       end))
+    end
 end
 
 -- }}}
