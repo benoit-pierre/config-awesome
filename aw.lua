@@ -544,7 +544,7 @@ end
 menulauncher = awful.widget.launcher({ image = awesome_icon, menu = mainmenu })
 
 -- Notmuch mail status.
-nmmailbox = widgets.notmuch()
+-- nmmailbox = widgets.notmuch()
 
 -- Prompt.
 promptbox = {}
@@ -589,7 +589,7 @@ for s = 1, screen.count() do
     -- Left widgets.
     clockbox,
     timerbox,
-    nmmailbox,
+    -- nmmailbox,
     keymapbox,
     promptbox[s],
   },
