@@ -9,15 +9,23 @@ local keepassx = require('keepassx')
 
 -- {{{ Version dependent code.
 
-aw_ver = '???'
-if awesome.version:match('v3[.]4[.]?') then
-  aw_ver = '3.4'
-end
-if awesome.version:match('v3[.]5[.]?') then
-  aw_ver = '3.5'
-end
+aw_ver = 0.0 + awesome.version:match('v([0-9].[0-9]).?')
 
-if '3.4' == aw_ver then
+if aw_ver >= 3.5 then
+  function connect_signal(instance, ...)
+    instance.connect_signal(...)
+  end
+  function disconnect_signal(instance, ...)
+    instance.disconnect_signal(...)
+  end
+  function tag_screen(t)
+    return awful.tag.getscreen(t)
+  end
+  function client_jumpto(c, merge)
+    awful.client.jumpto(c, merge)
+  end
+  client_iterate = awful.client.iterate
+elseif aw_ver >= 3.4 then
   function connect_signal(instance, ...)
     instance.add_signal(...)
   end
@@ -46,21 +54,6 @@ if '3.4' == aw_ver then
   client_iterate = awful.client.cycle
 end
 
-if '3.5' == aw_ver then
-  function connect_signal(instance, ...)
-    instance.connect_signal(...)
-  end
-  function disconnect_signal(instance, ...)
-    instance.disconnect_signal(...)
-  end
-  function tag_screen(t)
-    return awful.tag.getscreen(t)
-  end
-  function client_jumpto(c, merge)
-    awful.client.jumpto(c, merge)
-  end
-  client_iterate = awful.client.iterate
-end
 
 -- }}}
 
@@ -204,7 +197,7 @@ function client_toggle_keymap(c)
   client_apply_keymap(c)
 end
 
-if '3.5' == aw_ver then
+if aw_ver >= 3.5 then
   client.add_signal('keymap')
 end
 connect_signal(client, 'focus', client_apply_keymap)

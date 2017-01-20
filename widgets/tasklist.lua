@@ -5,27 +5,19 @@ local awful = require('awful')
 
 local tasklist = {}
 
-if '3.4' == aw_ver then
-
+if aw_ver >= 3.5 then
+  tasklist.new = function(screen_number, buttons)
+    return awful.widget.tasklist(screen_number, awful.widget.tasklist.filter.currenttags, tasklist.buttons)
+  end
+elseif aw_ver >= 3.4 then
   tasklist.new = function(screen_number)
     local filter = function(c)
       return awful.widget.tasklist.label.currenttags(c, screen_number)
     end
     local w = awful.widget.tasklist(filter, tasklist.buttons)
-
     awful.widget.layout.margins[w] = { right = screen[screen_number].geometry.width / 2 }
-
     return w
   end
-
-end
-
-if '3.5' == aw_ver then
-
-  tasklist.new = function(screen_number, buttons)
-    return awful.widget.tasklist(screen_number, awful.widget.tasklist.filter.currenttags, tasklist.buttons)
-  end
-
 end
 
 tasklist.buttons = awful.util.table.join(

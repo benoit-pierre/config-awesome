@@ -209,19 +209,18 @@ end
 connect_signal(client, 'focus', focus_history_add)
 connect_signal(client, 'unmanage', focus_history_del)
 
-if '3.4' == aw_ver then
+if aw_ver >= 3.5 then
+  connect_signal(tag, 'property::selected', focus_check)
+  connect_signal(client, 'untagged', focus_check)
+  connect_signal(client, 'property::hidden', on_visibility_change)
+  connect_signal(client, 'property::minimized', on_visibility_change)
+elseif aw_ver >= 3.4 then
   awful.tag.attached_add_signal(nil, 'property::selected', focus_check)
   client.add_signal('new', function(c)
     c:add_signal('untagged', focus_check)
     c:add_signal('property::hidden', on_visibility_change)
     c:add_signal('property::minimized', on_visibility_change)
 end)
-end
-if '3.5' == aw_ver then
-  connect_signal(tag, 'property::selected', focus_check)
-  connect_signal(client, 'untagged', focus_check)
-  connect_signal(client, 'property::hidden', on_visibility_change)
-  connect_signal(client, 'property::minimized', on_visibility_change)
 end
 connect_signal(client, 'unmanage', focus_check)
 

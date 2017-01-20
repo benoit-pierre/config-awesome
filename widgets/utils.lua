@@ -38,8 +38,13 @@ function utils.widget_class(class)
   return setmetatable(class, class.mt)
 end
 
-if '3.4' == aw_ver then
-
+if aw_ver >= 3.5 then
+  local wibox = require('wibox')
+  function utils.textbox()
+    local w = wibox.widget.textbox()
+    return w
+  end
+elseif aw_ver >= 3.4 then
   function utils.textbox()
     local w = {
       widget = widget { type = 'textbox' };
@@ -49,18 +54,6 @@ if '3.4' == aw_ver then
     }
     return w
   end
-
-end
-
-if '3.5' == aw_ver then
-
-  local wibox = require('wibox')
-
-  function utils.textbox()
-    local w = wibox.widget.textbox()
-    return w
-  end
-
 end
 
 return utils

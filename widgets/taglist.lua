@@ -5,30 +5,22 @@ local awful = require('awful')
 
 local taglist = {}
 
-if '3.4' == aw_ver then
-
-  taglist.viewnext = awful.tag.viewnext
-  taglist.viewprev = awful.tag.viewprev
-
-  taglist._new = function(screen_number, buttons)
-    return awful.widget.taglist(screen_number, awful.widget.taglist.label.all, buttons)
-  end
-
-end
-
-if '3.5' == aw_ver then
-
+if aw_ver >= 3.5 then
   taglist.viewnext = function(t)
     awful.tag.viewnext(awful.tag.getscreen(t))
   end
   taglist.viewprev = function(t)
     awful.tag.viewprev(awful.tag.getscreen(t))
   end
-
   taglist._new = function(screen_number, buttons)
     return awful.widget.taglist(screen_number, awful.widget.taglist.filter.all, buttons)
   end
-
+elseif aw_ver >= 3.4 then
+  taglist.viewnext = awful.tag.viewnext
+  taglist.viewprev = awful.tag.viewprev
+  taglist._new = function(screen_number, buttons)
+    return awful.widget.taglist(screen_number, awful.widget.taglist.label.all, buttons)
+  end
 end
 
 taglist.buttons = awful.util.table.join(
