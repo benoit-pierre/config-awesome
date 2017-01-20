@@ -26,7 +26,7 @@ function w.control(w, c, cmd)
     return
   end
   cmd = string.format('mp-control %u %s', c.pid, cmd)
-  awful.util.spawn(cmd)
+  spawn(cmd)
 end
 
 function w.toggle(w, c)
@@ -51,7 +51,7 @@ function w.place(w, c)
     return
   end
 
-  if c.fullscreen or not awful.client.floating.get(c) then
+  if c.fullscreen or not awful.client.property.get(c, 'floating') then
     return
   end
 
@@ -153,7 +153,7 @@ function w.manage(w, c, startup_idx)
 
   -- Restore ontop property when leaving fullscreen.
   connect_signal(c, c, 'property::fullscreen', function (c)
-    if not c.fullscreen and awful.client.floating.get(c) then
+    if not c.fullscreen and awful.client.property.get(c, 'floating') then
       c.ontop = true
     end
   end)

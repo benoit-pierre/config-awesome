@@ -38,6 +38,19 @@ function utils.widget_class(class)
   return setmetatable(class, class.mt)
 end
 
+function utils.pread(cmd)
+    if cmd and cmd ~= "" then
+        local f, err = io.popen(cmd, 'r')
+        if f then
+            local s = f:read("*all")
+            f:close()
+            return s
+        else
+            return err
+        end
+    end
+end
+
 if aw_ver >= 3.5 then
   local wibox = require('wibox')
   function utils.textbox()

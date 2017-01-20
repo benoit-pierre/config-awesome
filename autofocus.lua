@@ -56,6 +56,7 @@ end
 local focus_debug = false
 
 local client_tostring
+local screen_tostring
 local tag_tostring
 
 local focus_msg
@@ -67,6 +68,7 @@ if focus_debug then
   local utils = require('utils')
 
   client_tostring = utils.client_tostring
+  screen_tostring = utils.screen_tostring
   tag_tostring = utils.tag_tostring
 
   focus_msg = function (...)
@@ -101,6 +103,7 @@ if focus_debug then
 else
 
   client_tostring = function () return '' end
+  screen_tostring = client_tostring
   tag_tostring = client_tostring
 
   focus_msg = function (...) end
@@ -182,7 +185,7 @@ end
 local function focus_check()
   local c = client.focus
   local ms = mouse.screen
-  focus_msg('focus_check ' .. ms)
+  focus_msg('focus_check ' .. screen_tostring(ms))
   focus_print('current')
   -- Keep focus on fullscreen client.
   if focus_check_fullscreen(c) then

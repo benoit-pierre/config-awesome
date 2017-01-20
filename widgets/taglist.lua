@@ -24,10 +24,10 @@ elseif aw_ver >= 3.4 then
 end
 
 taglist.buttons = awful.util.table.join(
-awful.button(k_n, 1, awful.tag.viewonly),
-awful.button(k_m, 1, awful.client.movetotag),
+awful.button(k_n, 1, tag_viewonly),
+awful.button(k_m, 1, client_movetotag),
 awful.button(k_n, 3, awful.tag.viewtoggle),
-awful.button(k_m, 3, awful.client.toggletag),
+awful.button(k_m, 3, client_toggletag),
 awful.button(k_n, 4, taglist.viewnext),
 awful.button(k_n, 5, taglist.viewprev),
 nil

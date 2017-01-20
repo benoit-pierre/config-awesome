@@ -8,7 +8,7 @@ local notmuch = {}
 
 function notmuch.status()
 
-  local s = awutil.pread('notmuch count tag:unread')
+  local s = utils.pread('notmuch count tag:unread')
   local unread = tonumber(s) or 0
 
   if 0 == unread then

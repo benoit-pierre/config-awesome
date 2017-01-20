@@ -23,7 +23,7 @@ end
 tasklist.buttons = awful.util.table.join(
 awful.button(k_n, 1, function (c)
   if not c:isvisible() then
-    awful.tag.viewonly(c:tags()[1])
+    tag_viewonly(c:tags()[1])
   end
   client.focus = c
   c:raise()

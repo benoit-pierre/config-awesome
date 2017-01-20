@@ -26,7 +26,7 @@ keepassx.toggle = function ()
     end
     -- Move the window on the current tag and focus it.
     local s = mouse.screen
-    local t = awful.tag.selected(s)
+    local t = screen_selected_tag(s)
     c:tags({ t })
     c.hidden = false
     client_jumpto(c, false)
@@ -34,7 +34,7 @@ keepassx.toggle = function ()
   end
 
   -- No Keepassx window found, start it.
-  awful.util.spawn('keepassx')
+  spawn('keepassx')
 
 end
 

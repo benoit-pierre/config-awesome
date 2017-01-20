@@ -8,7 +8,7 @@ local nvperf = {}
 
 local function refresh(w)
 
-  local level = awful.util.pread('nvperf')
+  local level = utils.pread('nvperf')
 
   level = string.sub(level, 1, -2)
   if 'maximum' == level then

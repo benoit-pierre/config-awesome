@@ -53,6 +53,17 @@ function utils.geometry_tostring(g)
   return s
 end
 
+-- Convert a screen to a human readable string.
+if aw_ver >= 4.0 then
+  function utils.screen_tostring(s)
+    return string.format('%u', s.index)
+  end
+else
+  function utils.screen_tostring(s)
+    return string.format('%u', s)
+  end
+end
+
 -- Convert a tag to a human readable string.
 function utils.tag_tostring(t)
   local str = tag_screen(t) .. '.' .. t.name

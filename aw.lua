@@ -2,8 +2,6 @@
 local awful = require('awful')
 local beautiful = require('beautiful')
 local naughty = require('naughty')
-local utils = require('utils')
-local keepassx = require('keepassx')
 
 -- {{{ Global variable definitions.
 
@@ -11,7 +9,45 @@ local keepassx = require('keepassx')
 
 aw_ver = 0.0 + awesome.version:match('v([0-9].[0-9]).?')
 
-if aw_ver >= 3.5 then
+if aw_ver >= 4.0 then
+  local gears = require('gears')
+  function connect_signal(instance, ...)
+    instance.connect_signal(...)
+  end
+  function disconnect_signal(instance, ...)
+    instance.disconnect_signal(...)
+  end
+  function tag_screen(t)
+    return t.screen
+  end
+  function tag_viewonly(t)
+    t:view_only(t)
+  end
+  function client_jumpto(c, merge)
+    c:jump_to(merge)
+  end
+  function client_movetotag(tag, c)
+    if c == nil then
+      c = client.focus
+    end
+    c:move_to_tag(tag)
+  end
+  function client_toggletag(tag, c)
+    if c == nil then
+      c = client.focus
+    end
+    c:toggle_tag(tag)
+  end
+  function screen_index(s)
+    return s.index
+  end
+  function screen_selected_tag(s)
+    return s.selected_tag
+  end
+  client_iterate = awful.client.iterate
+  spawn = awful.spawn
+  timer = gears.timer
+elseif aw_ver >= 3.5 then
   function connect_signal(instance, ...)
     instance.connect_signal(...)
   end
@@ -24,7 +60,15 @@ if aw_ver >= 3.5 then
   function client_jumpto(c, merge)
     awful.client.jumpto(c, merge)
   end
+  function screen_index(s)
+    return s
+  end
   client_iterate = awful.client.iterate
+  client_movetotag = awful.client.movetotag
+  client_toggletag = awful.client.toggletag
+  screen_selected_tag = awful.tag.selected
+  spawn = awful.util.spawn
+  tag_viewonly = awful.tag.viewonly
 elseif aw_ver >= 3.4 then
   function connect_signal(instance, ...)
     instance.add_signal(...)
@@ -45,15 +89,26 @@ elseif aw_ver >= 3.4 then
         if merge then
             t.selected = true
         else
-            awful.tag.viewonly(t)
+            tag_viewonly(t)
         end
     end
     client.focus = c
     c:raise()
   end
+  function screen_index(s)
+    return s
+  end
   client_iterate = awful.client.cycle
+  client_movetotag = awful.client.movetotag
+  client_toggletag = awful.client.toggletag
+  screen_selected_tag = awful.tag.selected
+  spawn = awful.util.spawn
+  tag_viewonly = awful.tag.viewonly
 end
 
+-- Must be sourced after global functions/variables definitions.
+local keepassx = require('keepassx')
+local utils = require('utils')
 
 -- }}}
 
@@ -202,7 +257,8 @@ function client_toggle_keymap(c)
   client_apply_keymap(c)
 end
 
-if aw_ver >= 3.5 then
+if aw_ver >= 4.0 then
+elseif aw_ver >= 3.5 then
   client.add_signal('keymap')
 end
 connect_signal(client, 'focus', client_apply_keymap)
@@ -319,7 +375,11 @@ function state.save()
       client_state[v] = awful.client.property.get(c, v)
     end
     for k, v in ipairs(state.client_fields) do
-      client_state[v] = c[v]
+      if aw_ver >= 4.0 and v == 'screen' then
+        client_state[v] = c[v].index
+      else
+        client_state[v] = c[v]
+      end
     end
     client_state.geometry = c:geometry()
     s[c.window] = client_state
@@ -391,11 +451,11 @@ end
 
 function xsession_kill(signal)
   xsession_pid = os.getenv('XSESSION_PID')
-  awful.util.spawn('kill -'..signal..' '..xsession_pid)
+  spawn('kill -'..signal..' '..xsession_pid)
 end
 
 function lock()
-  awful.util.spawn(screenlocker)
+  spawn(screenlocker)
 end
 
 function logout()
@@ -404,12 +464,12 @@ end
 
 function hibernate()
   lock()
-  awful.util.spawn('shutdown -S')
+  spawn('shutdown -S')
 end
 
 function suspend()
   lock()
-  awful.util.spawn('shutdown -s')
+  spawn('shutdown -s')
 end
 
 function reboot()
@@ -456,7 +516,7 @@ awesomemenu =
 {
    { 'edit config', editor..' '..config_dir..'/aw.lua' },
    { 'restart', awesome_restart },
-   { 'quit', awesome.quit },
+   { 'quit', function() awesome.quit() end },
 }
 
 -- Programs.
@@ -559,7 +619,7 @@ taglist = {}
 -- Tasklist.
 tasklist = {}
 
-for s = 1, screen.count() do
+function configure_screen(s)
 
   -- Per screen widgets.
   layoutbox[s] = widgets.layoutbox(s)
@@ -600,9 +660,17 @@ for s = 1, screen.count() do
   },
   {
     -- Right widgets.
-    s == 1 and systray or nil,
+    screen_index(s) == 1 and systray or nil,
   })
 
+end
+
+if aw_ver >= 4.0 then
+  awful.screen.connect_for_each_screen(configure_screen)
+else
+  for s = 1, screen.count() do
+    configure_screen(s)
+  end
 end
 
 -- }}}
@@ -654,12 +722,12 @@ awful.key(k_m, 'grave', function () players:toggle() end),
 
 -- {{{ Programs.
 
-awful.key(k_m, 'Return', function () awful.util.spawn(terminal) end),
+awful.key(k_m, 'Return', function () spawn(terminal) end),
 awful.key(k_mc, 'r', awesome_restart),
 awful.key(k_ms, 'q', awesome.quit),
 
-awful.key(k_n, 'XF86Calculator', function () awful.util.spawn(calculator) end),
-awful.key(k_n, 'XF86Eject', function () awful.util.spawn('eject -T') end),
+awful.key(k_n, 'XF86Calculator', function () spawn(calculator) end),
+awful.key(k_n, 'XF86Eject', function () spawn('eject -T') end),
 
 awful.key(k_m, 'k', keepassx.toggle),
 
@@ -750,7 +818,7 @@ for i = 1, keynumber do
           screen_mouse_coords[ms] = mouse.coords()
           mouse.coords(screen_mouse_coords[ts])
         end
-        awful.tag.viewonly(t)
+        tag_viewonly(t)
       end),
     awful.key(k_mc, k,
       function ()
@@ -771,7 +839,7 @@ for i = 1, keynumber do
             mc = mouse.coords()
             awful.client.movetoscreen(c, ts)
           end
-          awful.client.movetotag(t)
+          client_movetotag(t, c)
           if ts ~= cs then
             mouse.coords(mc)
           end
@@ -779,8 +847,9 @@ for i = 1, keynumber do
       end),
     awful.key(k_mcs, k,
       function ()
-        if client.focus and tags_by_num[i] then
-          awful.client.toggletag(tags_by_num[i])
+        local c = client.focus
+        if c and tags_by_num[i] then
+          client_toggletag(tags_by_num[i], c)
         end
       end))
     end
@@ -1018,7 +1087,7 @@ t:start()
 disconnect_signal(client, 'manage', awful.rules.apply)
 
 -- Signal function to execute when a new client appears.
-connect_signal(client, 'manage', function (c, startup)
+function manage_client(c, startup)
 
   -- Enable sloppy focus.
   connect_signal(c, c, 'mouse::enter', function(c)
@@ -1066,7 +1135,12 @@ connect_signal(client, 'manage', function (c, startup)
     client_jumpto(c)
   end
 
-end)
+end
+if aw_ver >= 4.0 then
+  connect_signal(client, 'manage', function (c) manage_client(c, awesome.startup) end)
+elseif aw_ver >= 3.4 then
+  connect_signal(client, 'manage', manage_client)
+end
 
 connect_signal(client, 'focus', function(c) c.border_color = beautiful.border_focus end)
 connect_signal(client, 'unfocus', function(c) c.border_color = beautiful.border_normal end)

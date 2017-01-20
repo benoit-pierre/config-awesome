@@ -70,7 +70,12 @@ function wibox.new(position, screen, left_widgets, middle_widgets, right_widgets
     fg = beautiful.fg_normal,
     bg = beautiful.bg_normal,
   }
-  local w = awful.wibox(t)
+  local w
+  if aw_ver >= 4.0 then
+    w = awful.wibar(t)
+  else
+    w = awful.wibox(t)
+  end
 
   wibox._set_widgets(w, left_widgets, middle_widgets, right_widgets)
 
