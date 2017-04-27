@@ -64,6 +64,11 @@ icons_dir = config_dir..'/icons'
 -- Themes define colours, icons, and wallpapers.
 beautiful.init(config_dir..'/theme.lua')
 
+-- Configure notifications icon size.
+if aw_ver >= 3.5 then
+  naughty.config.defaults.icon_size = '48'
+end
+
 -- Programs.
 editor = 'gvim -f'
 terminal = 'term'
