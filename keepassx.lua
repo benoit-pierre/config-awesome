@@ -34,7 +34,7 @@ keepassx.toggle = function ()
   end
 
   -- No Keepassx window found, start it.
-  spawn('keepassx')
+  spawn('keepassxc')
 
 end
 
@@ -49,7 +49,7 @@ keepassx.callback = function (c)
 end
 
 keepassx.rules =   {
-  rule = { class = '[Kk]eepassx' },
+  rule = { class = 'keepassxc' },
   callback = keepassx.callback,
   properties =
   {
