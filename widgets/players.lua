@@ -20,6 +20,10 @@ w.properties =
   size_hints_honor = true,
 }
 
+-- Persistent state support.
+w.client_fields = {}
+w.client_properties = { 'player_idx' }
+
 function w.control(w, c, cmd)
   c = c or w.players[1]
   if not c then
@@ -83,35 +87,30 @@ function w.unmanage(w, c)
 
   for k, v in ipairs(w.players) do
     if v == c then
-      managed = true
       table.remove(w.players, k)
+      w:update_indexes()
+      local pc = w.players[1]
+      if pc and pc.hidden then
+        w:toggle(pc)
+      end
+      w:refresh()
+      return
     end
   end
-
-  if not managed then
-    return
-  end
-
-  local pc = w.players[1]
-  if pc and pc.hidden then
-    pc.hidden = false
-    w:control(pc, 'resume')
-  end
-
-  w:refresh()
 
 end
 
-function w.manage(w, c, startup_idx)
+function w.manage(w, c)
 
-  if not startup_idx then
+  local player_idx = awful.client.property.get(c, 'player_idx')
 
-    -- Hide and pause previous player.
-    local pc = w.players[1]
-    if pc then
-      w:control(pc, 'pause')
-      pc.hidden = true
-    end
+  if not player_idx then
+
+    player_idx = #w.players + 1
+    awful.client.property.set(c, 'player_idx', player_idx)
+
+    -- Start paused unless not other players are active.
+    local startup = not w.players[1]
 
     -- Force click to focus.
     awful.client.property.set(c, 'nofocus', true)
@@ -122,18 +121,24 @@ function w.manage(w, c, startup_idx)
     connect_signal(t, t, 'timeout', function ()
       t:stop()
       w:place(c)
-      c.hidden = false
+      if startup then
+        w:toggle(c)
+      end
     end)
     t:start()
 
   end
 
   -- Add to the list.
-  if startup_idx then
-    w.players[startup_idx] = c
-  else
-    table.insert(w.players, 1, c)
+  w.players[player_idx] = c
+
+  -- Add player index to persistent state properties.
+  local state_properties = awful.client.property.get(c, 'state_properties')
+  if not state_properties then
+    state_properties = {}
+    awful.client.property.set(c, 'state_properties', state_properties)
   end
+  table.insert(state_properties, 'player_idx')
 
   -- Show progress when entering window.
   local mouse_over = false
@@ -265,6 +270,8 @@ function w.select_kill(w)
   for k, v in ipairs(w.players) do
     if v == c then
       table.remove(w.players, k)
+      w:update_indexes()
+      break
     end
   end
 
@@ -297,9 +304,10 @@ function w.select_end(w)
   if 1 ~= w.selection then
     table.remove(w.players, w.selection)
     table.insert(w.players, 1, c)
+    w:update_indexes()
   end
 
-  if not c.hidden then
+  if c and not c.hidden then
     w:control(nil, 'resume')
   end
 
@@ -307,6 +315,12 @@ function w.select_end(w)
 
   w:refresh()
 
+end
+
+function w.update_indexes(w)
+  for k, v in ipairs(w.players) do
+    awful.client.property.set(v, 'player_idx', k)
+  end
 end
 
 function players.new()

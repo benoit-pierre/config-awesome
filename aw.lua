@@ -594,8 +594,10 @@ layoutbox = {}
 
 -- Media players handling.
 players = widgets.players()
-function players_callback(c, startup_idx)
-  players:manage(c, startup_idx)
+state.client_fields = awful.util.table.join(state.client_fields, players.client_fields)
+state.client_properties = awful.util.table.join(state.client_properties, players.client_properties)
+function players_callback(c)
+  players:manage(c)
 end
 
 -- Menu launcher.
@@ -1109,10 +1111,9 @@ function manage_client(c, startup)
     awful.placement.no_offscreen(c)
   end
 
-  -- Apply rules.
-  awful.rules.apply(c)
-
   if not startup then
+    -- Apply rules.
+    awful.rules.apply(c)
     return
   end
 
@@ -1120,6 +1121,8 @@ function manage_client(c, startup)
   local client_state = state.state and state.state[c.window]
 
   if not client_state then
+    -- Apply rules.
+    awful.rules.apply(c)
     return
   end
 
@@ -1129,6 +1132,10 @@ function manage_client(c, startup)
   for k, v in ipairs(state.client_fields) do
     c[v] = client_state[v]
   end
+
+  -- Apply rules.
+  awful.rules.apply(c)
+
   c:geometry(client_state.geometry)
 
   if state.state.focus == c.window then
